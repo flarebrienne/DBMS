@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Doctor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h2>Add Doctor</h2>
+        {% if success %}
+        <div
+            style="background-color:#d4edda;color:#155724;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+            Doctor has been successfully added!
+        </div>
+        {% endif %}
+        <form action="http://127.0.0.1:5000/add_doctor" method="POST">
+
+            <input type="text" name="doctor_id" placeholder="Doctor ID" required>
+
+            <input type="text" name="first_name" placeholder="First Name" required>
+
+            <input type="text" name="last_name" placeholder="Last Name" required>
+
+            <input type="text" name="specialty" placeholder="Specialty" required>
+
+            <input type="email" name="email" placeholder="Email" required>
+
+            <!-- Department Dropdown -->
+            <select name="department_name" required>
+
+                {% for dept in departments %}
+                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                {% endfor %}
+
+            </select>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+</body>
+
+</html>
