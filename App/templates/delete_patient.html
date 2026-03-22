@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Patient</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 380px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        select, button {
+            display: block;
+            margin-top: 5px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #c0392b; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Delete Patient</h2>
+        <form action="/delete_patient" method="POST">
+            <label for="patient_id">Select Patient:</label>
+            <select name="patient_id" id="patient_id" required>
+                <option value="" disabled selected>-- Choose a Patient --</option>
+                {% for patient in patients %}
+                <option value="{{ patient[0] }}">
+                    {{ patient[1] }} {{ patient[2] }} (ID: {{ patient[0] }})
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Delete Patient</button>
+        </form>
+        <a class="back-link" href="/">← Back to Home</a>
+    </div>
+</body>
+</html>

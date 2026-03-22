@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Patient</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 380px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #0056b3; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Patient</h2>
+
+        {% if success %}
+        <div style="background-color:#d4edda;color:#155724;padding:10px;
+                     margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+            Patient has been successfully added!
+        </div>
+        {% endif %}
+
+        <form action="/add_patient" method="POST">
+            <label for="patient_id">Patient ID:</label>
+            <input type="number" name="patient_id" id="patient_id"
+                   placeholder="e.g. 101" required>
+
+            <label for="first_name">First Name:</label>
+            <input type="text" name="first_name" id="first_name"
+                   placeholder="First Name" required>
+
+            <label for="last_name">Last Name:</label>
+            <input type="text" name="last_name" id="last_name"
+                   placeholder="Last Name" required>
+
+            <label for="dob">Date of Birth:</label>
+            <input type="date" name="dob" id="dob" required>
+
+            <label for="gender">Gender:</label>
+            <select name="gender" id="gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+            </select>
+
+            <label for="address">Address:</label>
+            <input type="text" name="address" id="address" placeholder="Address">
+
+            <label for="phone">Phone:</label>
+            <input type="text" name="phone" id="phone" placeholder="Phone Number">
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" placeholder="Email">
+
+            <label for="department_name">Department:</label>
+            <select name="department_name" id="department_name" required>
+                <option value="" disabled selected>Select Department</option>
+                {% for dept in departments %}
+                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Add Patient</button>
+        </form>
+        <a class="back-link" href="/">← Back to Home</a>
+    </div>
+</body>
+</html>
