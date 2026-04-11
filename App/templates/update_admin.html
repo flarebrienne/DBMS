@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Administrator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Update Hospital Administrator</h2>
+
+        {% if success %}
+        <div style="background-color:#d4edda;color:#155724;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+            Administrator has been successfully updated!
+        </div>
+        {% endif %}
+
+        <form action="/update_admin" method="POST">
+            <label for="admin_id">Select Administrator</label>
+            <select name="admin_id" id="admin_id" required>
+                {% for admin in admins %}
+                <option value="{{ admin[0] }}">
+                    {{ admin[1] }} {{ admin[2] }} (ID: {{ admin[0] }})
+                </option>
+                {% endfor %}
+            </select>
+
+            <input type="text" name="first_name" placeholder="First Name" required>
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="text" name="phone" placeholder="Phone Number">
+            <input type="email" name="email" placeholder="Email">
+            <input type="text" name="role_name" placeholder="Role Name" required>
+
+            <label for="department_name">Department</label>
+            <select name="department_name" required>
+                {% for dept in departments %}
+                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Update Administrator</button>
+        </form>
+    </div>
+</body>
+</html>

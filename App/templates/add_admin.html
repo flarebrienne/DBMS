@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Administrator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Hospital Administrator</h2>
+
+        {% if success %}
+        <div style="background-color:#d4edda;color:#155724;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+            Administrator has been successfully added!
+        </div>
+        {% endif %}
+
+        <form action="/add_admin" method="POST">
+            <input type="number" name="admin_id" placeholder="Admin ID" required>
+            <input type="text" name="first_name" placeholder="First Name" required>
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="text" name="phone" placeholder="Phone Number">
+            <input type="email" name="email" placeholder="Email">
+            <input type="text" name="role_name" placeholder="Role Name" required>
+
+            <label for="department_name">Department</label>
+            <select name="department_name" required>
+                {% for dept in departments %}
+                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Add Administrator</button>
+        </form>
+    </div>
+</body>
+</html>

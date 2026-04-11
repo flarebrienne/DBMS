@@ -164,3 +164,14 @@ CREATE TABLE Associated_with (
     FOREIGN KEY (dept_name) REFERENCES Department(dept_name),
     FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id)
 );
+
+CREATE TABLE Hospital_Administrator (
+    admin_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    role_name VARCHAR(100),
+    dept_name VARCHAR(100),
+    FOREIGN KEY (dept_name) REFERENCES Department(dept_name)
+);

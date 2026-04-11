@@ -1,0 +1,82 @@
+]<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Management System</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .box {
+            background-color: orange;
+            padding: 40px 60px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 420px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .open-btn {
+            background-color: green;
+        }
+
+        .close-btn {
+            background-color: red;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Hospital Management System</h1>
+
+        <div class="buttons">
+            <a href="/add_doctor_form"><button class="open-btn">Add Doctor</button></a>
+            <a href="/update_doctor_form"><button class="open-btn">Update Doctor</button></a>
+            <a href="/delete_doctor_form"><button class="close-btn">Delete Doctor</button></a>
+
+            <a href="/add_patient_form"><button class="open-btn">Add Patient</button></a>
+            <a href="/update_patient_form"><button class="open-btn">Update Patient</button></a>
+            <a href="/delete_patient_form"><button class="close-btn">Delete Patient</button></a>
+
+            <a href="/add_nurse_form"><button class="open-btn">Add Nurse</button></a>
+            <a href="/update_nurse_form"><button class="open-btn">Update Nurse</button></a>
+            <a href="/delete_nurse_form"><button class="close-btn">Delete Nurse</button></a>
+
+            <a href="/add_admin_form"><button class="open-btn">Add Admin</button></a>
+            <a href="/update_admin_form"><button class="open-btn">Update Admin</button></a>
+            <a href="/delete_admin_form"><button class="close-btn">Delete Admin</button></a>
+        </div>
+    </div>
+</body>
+</html>

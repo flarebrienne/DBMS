@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Administrator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        select, button {
+            display: block;
+            margin-top: 12px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Delete Hospital Administrator</h2>
+        <form action="/delete_admin" method="POST">
+            <label for="admin_id">Select Administrator</label>
+            <select name="admin_id" id="admin_id" required>
+                {% for admin in admins %}
+                <option value="{{ admin[0] }}">
+                    {{ admin[1] }} {{ admin[2] }} (ID: {{ admin[0] }})
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Delete Administrator</button>
+        </form>
+    </div>
+</body>
+</html>
