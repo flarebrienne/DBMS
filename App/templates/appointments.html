@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <h1>Appointments</h1>
+    <a href="{{ url_for('add_appointment') }}" class="btn">+ Add Appointment</a>
+</div>
+
+<div class="filter-bar">
+    <input
+        type="text"
+        id="generalSearch"
+        placeholder="Search patient, doctor, department, status..."
+    >
+
+    <select id="departmentFilter">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept }}">{{ dept }}</option>
+        {% endfor %}
+    </select>
+
+    <select id="doctorFilter">
+        <option value="">All Doctors</option>
+        {% for doctor in doctor_names %}
+        <option value="{{ doctor }}">{{ doctor }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th class="actions-col">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="appointmentsTableBody">
+            {% for appt in appointments %}
+            <tr
+                id="appointment-row-{{ appt[0] }}"
+                data-patient="{{ appt[1]|lower }}"
+                data-doctor="{{ appt[2]|lower }}"
+                data-department="{{ appt[3]|lower }}"
+                data-date="{{ appt[4]|string|lower }}"
+                data-time="{{ appt[5]|string|lower }}"
+                data-status="{{ appt[6]|lower }}"
+            >
+                <td>{{ appt[0] }}</td>
+                <td>{{ appt[1] }}</td>
+                <td>{{ appt[2] }}</td>
+                <td>{{ appt[3] }}</td>
+                <td>{{ appt[4] }}</td>
+                <td>{{ appt[5] }}</td>
+                <td>
+                    <span class="status {{ appt[6]|lower }}">
+                        {{ appt[6] }}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('view_appointment', appointment_id=appt[0]) }}" title="View">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+
+                    <a href="{{ url_for('edit_appointment', appointment_id=appt[0]) }}" title="Edit">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+
+                    <a href="#" onclick="deleteAppointment({{ appt[0] }}); return false;" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

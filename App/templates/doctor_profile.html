@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<div class="doctor-page">
+
+    <div class="page-header">
+        <div>
+            <h1>Dr. {{ doctor[1] }} {{ doctor[2] }}</h1>
+            <p>{{ doctor[3] }} • {{ doctor[4] }}</p>
+        </div>
+
+        <div class="header-actions">
+            <a href="#" class="btn">Edit</a>
+            <a href="#" class="btn">Schedule Appointment</a>
+        </div>
+    </div>
+
+    <div class="summary-cards">
+        <div class="card stat-card">
+            <h3>{{ total_patients[0] }}</h3>
+            <p>Assigned Patients</p>
+        </div>
+
+        <div class="card stat-card">
+            <h3>{{ appointments_today[0] }}</h3>
+            <p>Appointments Today</p>
+        </div>
+
+        <div class="card stat-card">
+            <h3>{{ active_admissions[0] }}</h3>
+            <p>Active Admissions</p>
+        </div>
+
+        <div class="card stat-card">
+            <h3>{{ doctor_status }}</h3>
+            <p>Status</p>
+        </div>
+    </div>
+
+    <div class="doctor-grid">
+        <div class="left-column">
+            <div class="card">
+                <h2>Doctor Information</h2>
+                <p><strong>ID:</strong> {{ doctor[0] }}</p>
+                <p><strong>Specialty:</strong> {{ doctor[3] }}</p>
+                <p><strong>Department:</strong> {{ doctor[5] }}</p>
+                <p><strong>Email:</strong> {{ doctor[4] }}</p>
+                <!-- <p><strong>Phone:</strong> {{ doctor[6]}}</p> -->
+                <p><strong>Status:</strong> {{ doctor_status }}</p>
+            </div>
+
+            <div class="card">
+                <h2>Availability</h2>
+                <p><strong>Shift:</strong> doctor.shift_name </p>
+                <p><strong>Hours:</strong> doctor.shift_hours </p>
+                <p><strong>On Call:</strong> on_call_status </p>
+                <p><strong>Next Available Slot:</strong> next_available_slot </p>
+            </div>
+
+            <div class="card">
+                <h2>Recent Activity</h2>
+                {% if recent_activity %}
+                    <ul class="simple-list">
+                        {% for item in recent_activity %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No recent activity available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="card">
+                <h2>Upcoming Appointments</h2>
+                {% if upcoming_appointments %}
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in upcoming_appointments %}
+                        <tr>
+                            <td>{{ appt[0] }}</td>
+                            <td>{{ appt[1] }}</td>
+                            <td>{{ appt[2] }}</td>
+                            <td>{{ appt[3] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No upcoming appointments.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Assigned Patients</h2>
+                {% if patients %}
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Name</th>
+                            <th>Condition</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.patient_id }}</td>
+                            <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                            <td>{{ patient.condition or 'N/A' }}</td>
+                            <td>
+                                <a href="#">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No assigned patients.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Current Admissions</h2>
+                {% if admissions %}
+                    <ul class="simple-list">
+                        {% for admission in admissions %}
+                        <li>
+                            {{ admission[0] }} — Ward {{admission[1]}} —Room {{admission[2]}} — Bed {{ admission[3] }} — Admitted {{ admission[4] }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No active admissions.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

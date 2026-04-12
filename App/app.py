@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+import os
+
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pymysql as db
 
 app = Flask(__name__)
@@ -13,9 +15,87 @@ conn = db.connect(
 )
 
 
-@app.route("/")
-def home():
-    return render_template("home.html")
+@app.route("/patients")
+def patients():
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT patient_id, first_name, last_name, dob, gender, phone, gender FROM patient;")
+    out = cursor.fetchall()
+    return render_template("patients.html", patients=out)
+
+@app.route("/view_patient/<int:patient_id>")
+def view_patient(patient_id):
+    pass
+
+@app.route("/delete_patient/<int:patient_id>")
+def delete_patient(patient_id):
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM patient WHERE patient_id = %s", (patient_id,))
+    conn.commit()
+    cursor.close()
+    return jsonify({"success":True, "message":"Works"})
+
+@app.route("/edit_patient/<int:patient_id>")
+def edit_patient(patient_id):
+    pass
+
+@app.route("/doctors")
+def doctors():
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT doctor_id, first_name, last_name, specialty, email, dept_name FROM doctor;")
+    out = cursor.fetchall()
+    return render_template("doctors.html", doctors=out)
+
+@app.route("/view_doctor/<int:doctor_id>")
+def view_doctor(doctor_id):
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT doctor_id, first_name, last_name, specialty, email, dept_name FROM doctor WHERE doctor_id={doctor_id};")
+    doctor = cursor.fetchone()
+    cursor.execute(f"SELECT COUNT(*) FROM patient;")
+    total_patients = cursor.fetchone()
+    cursor.execute(f"SELECT COUNT(*) FROM appointment WHERE DATE(ap_datetime)=CURDATE();")
+    appointments_today = cursor.fetchone()
+    cursor.execute(f"SELECT COUNT(*)  FROM admission WHERE doctor_id={doctor_id} AND status='Active';")
+    active_admissions = cursor.fetchone()
+    cursor.execute(f""" SELECT CONCAT(p.first_name, p.last_name) AS patient_name,
+                        DATE(a.ap_datetime) AS date,
+                        TIME(ap_datetime) AS time,
+                        status
+                        FROM patient as p join appointment as a
+                        ON p.patient_id=a.patient_id order by ap_datetime;""")
+    upcoming_appointments = cursor.fetchall()
+    cursor.execute(f"""SELECT CONCAT(p.first_name, p.last_name), ward, room, bed_no, admit_datetime
+                       FROM admission AS a join patient AS  p join beds AS b
+                       WHERE a.patient_id=p.patient_id and b.admit_id = a.admit_id;""")
+    admissions = cursor.fetchall()
+
+    return render_template(
+    "doctor_profile.html",
+    doctor=doctor,
+    total_patients=total_patients,
+    appointments_today=appointments_today,
+    active_admissions=active_admissions,
+    doctor_status="Active",
+    on_call_status="No",
+    next_available_slot="2026-04-12 10:30 AM",
+    upcoming_appointments=upcoming_appointments,
+    patients=[],
+    admissions=admissions,
+    recent_activity=[]
+)
+
+@app.route("/delete_doctor/<int:doctor_id>", methods=["POST", "GET"])
+def delete_doctor(doctor_id):
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM doctor WHERE doctor_id = %s", (doctor_id,))
+    conn.commit()
+    cursor.close()
+    return jsonify({"success":True, "message":"Works"})
+
+@app.route("/edit_doctor/<int:doctor_id>")
+def edit_doctor(doctor_id):
+    return render_template("doctors.html")
+
+
 
 
 @app.route("/favicon.ico")
@@ -79,14 +159,14 @@ def delete_doctor_form():
     return render_template("delete_doctor.html", doctors=doctors)
 
 
-@app.route("/delete_doctor", methods=["POST"])
-def delete_doctor():
-    doctor_id = request.form["doctor_id"]
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM doctor WHERE doctor_id = %s", (doctor_id,))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("delete_doctor_form"))
+# @app.route("/delete_doctor", methods=["POST"])
+# def delete_doctor():
+#     doctor_id = request.form["doctor_id"]
+#     cursor = conn.cursor()
+#     cursor.execute("DELETE FROM doctor WHERE doctor_id = %s", (doctor_id,))
+#     conn.commit()
+#     cursor.close()
+#     return redirect(url_for("delete_doctor_form"))
 
 
 @app.route("/update_doctor_form")
@@ -170,14 +250,14 @@ def delete_patient_form():
     return render_template("delete_patient.html", patients=patients)
 
 
-@app.route("/delete_patient", methods=["POST"])
-def delete_patient():
-    patient_id = request.form["patient_id"]
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM patient WHERE patient_id = %s", (patient_id,))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("delete_patient_form"))
+# @app.route("/delete_patient", methods=["POST"])
+# def delete_patient():
+#     patient_id = request.form["patient_id"]
+#     cursor = conn.cursor()
+#     cursor.execute("DELETE FROM patient WHERE patient_id = %s", (patient_id,))
+#     conn.commit()
+#     cursor.close()
+#     return redirect(url_for("delete_patient_form"))
 
 
 @app.route("/update_patient_form")
