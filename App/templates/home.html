@@ -1,4 +1,4 @@
-]<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,75 +7,92 @@
         body {
             margin: 0;
             min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #f4f4f4);
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
         }
 
-        .box {
-            background-color: orange;
-            padding: 40px 60px;
-            border-radius: 12px;
+        .container {
+            width: 90%;
+            max-width: 1100px;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            width: 420px;
         }
 
         h1 {
-            color: white;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 40px;
         }
 
-        .buttons a {
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 35px 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            transition: transform 0.25s, box-shadow 0.25s;
             text-decoration: none;
+            color: inherit;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 6px;
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+        }
+
+        .card h2 {
+            margin-bottom: 12px;
+            color: #0077b6;
+            font-size: 28px;
+        }
+
+        .card p {
             font-size: 16px;
-            cursor: pointer;
-            color: white;
+            color: #555;
         }
 
-        .open-btn {
-            background-color: green;
-        }
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
 
-        .close-btn {
-            background-color: red;
-        }
-
-        button:hover {
-            opacity: 0.9;
+            h1 {
+                font-size: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="box">
+    <div class="container">
         <h1>Hospital Management System</h1>
 
-        <div class="buttons">
-            <a href="/add_doctor_form"><button class="open-btn">Add Doctor</button></a>
-            <a href="/update_doctor_form"><button class="open-btn">Update Doctor</button></a>
-            <a href="/delete_doctor_form"><button class="close-btn">Delete Doctor</button></a>
+        <div class="card-grid">
+            <a class="card" href="/doctor_menu">
+                <h2>Doctor</h2>
+                <p>Manage doctor records and operations</p>
+            </a>
 
-            <a href="/add_patient_form"><button class="open-btn">Add Patient</button></a>
-            <a href="/update_patient_form"><button class="open-btn">Update Patient</button></a>
-            <a href="/delete_patient_form"><button class="close-btn">Delete Patient</button></a>
+            <a class="card" href="/patient_menu">
+                <h2>Patient</h2>
+                <p>Manage patient records and operations</p>
+            </a>
 
-            <a href="/add_nurse_form"><button class="open-btn">Add Nurse</button></a>
-            <a href="/update_nurse_form"><button class="open-btn">Update Nurse</button></a>
-            <a href="/delete_nurse_form"><button class="close-btn">Delete Nurse</button></a>
+            <a class="card" href="/nurse_menu">
+                <h2>Nurse</h2>
+                <p>Manage nurse records and operations</p>
+            </a>
 
-            <a href="/add_admin_form"><button class="open-btn">Add Admin</button></a>
-            <a href="/update_admin_form"><button class="open-btn">Update Admin</button></a>
-            <a href="/delete_admin_form"><button class="close-btn">Delete Admin</button></a>
+            <a class="card" href="/admin_menu">
+                <h2>Administrator</h2>
+                <p>Manage hospital administrator records</p>
+            </a>
         </div>
     </div>
 </body>

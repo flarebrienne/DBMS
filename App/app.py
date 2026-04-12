@@ -7,7 +7,7 @@ conn = db.connect(
     host="mysql-3122869c-abdourahmanbarry7-9e3e.b.aivencloud.com",
     user="avnadmin",
     port=18787,
-    password="",
+    password=os.environ.get("DB_PASSWORD"),
     database="defaultdb",
     ssl={"ssl": {}}
 )
@@ -399,6 +399,47 @@ def update_admin():
     cursor.close()
     return render_template("update_admin.html", admins=admins, departments=departments, success=True)
 
+@app.route("/doctor_menu")
+def doctor_menu():
+    return render_template(
+        "role_menu.html",
+        role_name="Doctor",
+        add_url="/add_doctor_form",
+        update_url="/update_doctor_form",
+        delete_url="/delete_doctor_form"
+    )
 
+
+@app.route("/patient_menu")
+def patient_menu():
+    return render_template(
+        "role_menu.html",
+        role_name="Patient",
+        add_url="/add_patient_form",
+        update_url="/update_patient_form",
+        delete_url="/delete_patient_form"
+    )
+
+
+@app.route("/nurse_menu")
+def nurse_menu():
+    return render_template(
+        "role_menu.html",
+        role_name="Nurse",
+        add_url="/add_nurse_form",
+        update_url="/update_nurse_form",
+        delete_url="/delete_nurse_form"
+    )
+
+
+@app.route("/admin_menu")
+def admin_menu():
+    return render_template(
+        "role_menu.html",
+        role_name="Administrator",
+        add_url="/add_admin_form",
+        update_url="/update_admin_form",
+        delete_url="/delete_admin_form"
+    )
 if __name__ == "__main__":
     app.run(debug=True)
