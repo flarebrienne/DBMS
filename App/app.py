@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pymysql as db
+from datetime import date
 
 app = Flask(__name__)
 
@@ -95,9 +96,126 @@ def delete_doctor(doctor_id):
 def edit_doctor(doctor_id):
     return render_template("doctors.html")
 
+
 @app.route("/appointments")
 def appointments():
-    return render_template("appointments.html")
+    selected_date = request.args.get("date", date.today().isoformat())
+    search = request.args.get("search", "").strip()
+    gender = request.args.get("gender", "").strip()
+    status = request.args.get("status", "").strip()
+    page = max(int(request.args.get("page", 1)), 1)
+    per_page = 10
+    offset = (page - 1) * per_page
+    cursor = conn.cursor(db.cursors.DictCursor)
+
+    doctor_id=2
+    where_clauses = ["a.patient_id = p.patient_id", "a.doctor_id = %s"]
+    params = [doctor_id]
+
+    if selected_date:
+        where_clauses.append("DATE(a.ap_datetime) = %s")
+        params.append(selected_date)
+
+    if search:
+        where_clauses.append("(p.first_name LIKE %s OR p.last_name LIKE %s OR p.phone LIKE %s)")
+        like_value = f"%{search}%"
+        params.extend([like_value, like_value, like_value])
+
+    if gender:
+        where_clauses.append("p.gender = %s")
+        params.append(gender)
+
+    if status:
+        where_clauses.append("a.status = %s")
+        params.append(status)
+
+    where_sql = " AND ".join(where_clauses)
+
+    # count query for pagination
+    count_sql = f"""
+        SELECT COUNT(*) AS total_rows
+        FROM patient AS p
+        JOIN appointment AS a
+        WHERE {where_sql}
+    """
+    cursor.execute(count_sql, params)
+    count_result = cursor.fetchone()
+    total_rows = count_result["total_rows"] or 0
+
+    total_pages = max((total_rows + per_page - 1) // per_page, 1)
+
+
+    if page > total_pages:
+        page = total_pages
+        offset = (page - 1) * per_page
+
+ 
+    appointments_sql = f"""
+        SELECT
+            p.first_name,
+            p.last_name,
+            p.gender,
+            p.dob,
+            TIME(a.ap_datetime) AS time,
+            p.phone,
+            a.status
+        FROM patient AS p
+        JOIN appointment AS a
+        WHERE {where_sql}
+        ORDER BY a.ap_datetime ASC
+        LIMIT %s OFFSET %s
+    """
+    cursor.execute(appointments_sql, params + [per_page, offset])
+    appointments = cursor.fetchall()
+
+    # stats
+    cursor.execute(
+        "SELECT COUNT(*) AS total_appointments FROM appointment WHERE doctor_id = %s",
+        (doctor_id,)
+    )
+    stats1 = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT COUNT(*) AS completed_appointments FROM appointment WHERE doctor_id = %s AND status = 'Completed'",
+        (doctor_id,)
+    )
+    stats2 = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT COUNT(*) AS pending_appointments FROM appointment WHERE doctor_id = %s AND status = 'Pending'",
+        (doctor_id,)
+    )
+    stats3 = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT COUNT(*) AS cancelled_appointments FROM appointment WHERE doctor_id = %s AND status = 'Cancelled'",
+        (doctor_id,)
+    )
+    stats4 = cursor.fetchone()
+
+    cursor.close()
+
+    start_row = 0 if total_rows == 0 else offset + 1
+    end_row = min(offset + per_page, total_rows)
+    return render_template(
+        "appointments.html",
+        appointments=appointments,
+        selected_date=selected_date,
+        total_appointments=stats1["total_appointments"] or 0,
+        completed_appointments=stats2["completed_appointments"] or 0,
+        pending_appointments=stats3["pending_appointments"] or 0,
+        cancelled_appointments=stats4["cancelled_appointments"] or 0,
+        current_search=search,
+        current_gender=gender,
+        current_status=status,
+        current_page=page,
+        per_page=per_page,
+        total_rows=total_rows,
+        total_pages=total_pages,
+        start_row=start_row,
+        end_row=end_row,
+        doctor_id=doctor_id
+    )
 
 
 

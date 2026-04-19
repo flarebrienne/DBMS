@@ -2,101 +2,7 @@
 
 {% block content %}
 
-{% set selected_date = "2026-04-19" %}
-{% set total_appointments = 28 %}
-{% set completed_appointments = 12 %}
-{% set pending_appointments = 11 %}
-{% set cancelled_appointments = 5 %}
-
-{% set appointments = [
-{
-"patient_name": "John Doe",
-"patient_meta": "Regular patient",
-"age": 34,
-"gender": "Male",
-"last_visited": "2026-03-10",
-"appointment_time": "09:00 AM",
-"status": "Completed",
-"contact": "+1 555-123-4567"
-},
-{
-"patient_name": "Jane Williams",
-"patient_meta": "Returning patient",
-"age": 28,
-"gender": "Female",
-"last_visited": "2026-02-22",
-"appointment_time": "09:30 AM",
-"status": "Completed",
-"contact": "+1 555-987-6543"
-},
-{
-"patient_name": "Robert Johnson",
-"patient_meta": "Follow-up visit",
-"age": 45,
-"gender": "Male",
-"last_visited": "2026-01-18",
-"appointment_time": "10:00 AM",
-"status": "Pending",
-"contact": "+1 555-456-7890"
-},
-{
-"patient_name": "Emily Wilson",
-"patient_meta": "New consultation",
-"age": 32,
-"gender": "Female",
-"last_visited": "2026-03-02",
-"appointment_time": "10:30 AM",
-"status": "Pending",
-"contact": "+1 555-321-6789"
-},
-{
-"patient_name": "Michael Brown",
-"patient_meta": "Routine checkup",
-"age": 50,
-"gender": "Male",
-"last_visited": "2025-12-14",
-"appointment_time": "11:00 AM",
-"status": "Cancelled",
-"contact": "+1 555-654-3210"
-},
-{
-"patient_name": "Sarah Davis",
-"patient_meta": "Lab review",
-"age": 29,
-"gender": "Female",
-"last_visited": "2026-04-01",
-"appointment_time": "11:30 AM",
-"status": "Completed",
-"contact": "+1 555-789-0123"
-},
-{
-"patient_name": "David Miller",
-"patient_meta": "Repeat consultation",
-"age": 38,
-"gender": "Male",
-"last_visited": "2026-03-19",
-"appointment_time": "01:00 PM",
-"status": "Pending",
-"contact": "+1 555-234-5678"
-},
-{
-"patient_name": "Lisa Anderson",
-"patient_meta": "Skin review",
-"age": 26,
-"gender": "Female",
-"last_visited": "2026-02-08",
-"appointment_time": "01:30 PM",
-"status": "Pending",
-"contact": "+1 555-876-5432"
-}
-] %}
-
 <style>
-    .content {
-        background: #f5f7fb;
-        padding: 16px;
-    }
-
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -321,6 +227,7 @@
         align-items: center;
         gap: 6px;
         cursor: pointer;
+        text-decoration: none;
     }
 
     .appointments-table-wrap {
@@ -387,11 +294,6 @@
         margin-bottom: 2px;
     }
 
-    .person-meta {
-        font-size: 11px;
-        color: #64748b;
-    }
-
     .age-badge {
         display: inline-flex;
         align-items: center;
@@ -455,8 +357,6 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        opacity: 1;
-        visibility: visible;
     }
 
     .action-btn {
@@ -471,6 +371,7 @@
         align-items: center;
         justify-content: center;
         font-size: 11px;
+        text-decoration: none;
     }
 
     .action-btn:hover {
@@ -510,6 +411,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        text-decoration: none;
     }
 
     .page-btn.active {
@@ -556,7 +458,6 @@
     </div>
 
     <div class="header-actions">
-        <input type="date" class="date-box" value="{{ selected_date }}">
         <a href="#" class="btn-primary">
             <i class="fas fa-plus"></i>
             New Appointment
@@ -588,7 +489,7 @@
                 <div class="stat-number">{{ completed_appointments }}</div>
             </div>
         </div>
-        <div class="stat-subtext">42.86% of total appointments</div>
+        <div class="stat-subtext">Finished appointments</div>
     </div>
 
     <div class="stat-card">
@@ -601,7 +502,7 @@
                 <div class="stat-number">{{ pending_appointments }}</div>
             </div>
         </div>
-        <div class="stat-subtext">39.29% still awaiting completion</div>
+        <div class="stat-subtext">Waiting to be completed</div>
     </div>
 
     <div class="stat-card">
@@ -614,7 +515,7 @@
                 <div class="stat-number">{{ cancelled_appointments }}</div>
             </div>
         </div>
-        <div class="stat-subtext">17.86% were cancelled</div>
+        <div class="stat-subtext">Not attended or cancelled</div>
     </div>
 </div>
 
@@ -622,30 +523,37 @@
     <div class="table-toolbar">
         <div class="table-title">Appointments List</div>
 
-        <div class="toolbar-actions">
+        <form method="GET" action="{{ url_for('appointments') }}" class="toolbar-actions">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search patient...">
+                <input type="text" name="search" value="{{ current_search }}" placeholder="Search patient...">
             </div>
 
-            <select class="filter-select" id="genderFilter">
+            <select class="filter-select" name="gender">
                 <option value="">Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="M" {% if current_gender=="M" %}selected{% endif %}>Male</option>
+                <option value="F" {% if current_gender=="F" %}selected{% endif %}>Female</option>
             </select>
 
-            <select class="filter-select" id="statusFilter">
+            <select class="filter-select" name="status">
                 <option value="">Status</option>
-                <option value="Completed">Completed</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="Completed" {% if current_status=="Completed" %}selected{% endif %}>Completed</option>
+                <option value="Pending" {% if current_status=="Pending" %}selected{% endif %}>Pending</option>
+                <option value="Cancelled" {% if current_status=="Cancelled" %}selected{% endif %}>Cancelled</option>
             </select>
 
-            <button class="toolbar-btn" type="button" id="resetFilters">
+            <input type="date" class="date-box" name="date" value="{{ selected_date }}">
+
+            <button class="toolbar-btn" type="submit">
+                <i class="fas fa-filter"></i>
+                Apply
+            </button>
+
+            <a class="toolbar-btn" href="{{ url_for('appointments') }}">
                 <i class="fas fa-rotate-left"></i>
                 Reset
-            </button>
-        </div>
+            </a>
+        </form>
     </div>
 
     <div class="appointments-table-wrap">
@@ -664,19 +572,19 @@
                 </tr>
             </thead>
 
-            <tbody id="appointmentsBody">
+            <tbody>
                 {% if appointments %}
                 {% for appt in appointments %}
-                <tr data-gender="{{ appt.gender }}" data-status="{{ appt.status }}">
-                    <td>{{ loop.index }}</td>
+                <tr>
+                    <td>{{ loop.index + ((current_page - 1) * per_page) }}</td>
 
                     <td>
                         <div class="person-cell">
                             <div class="avatar">
-                                {{ appt.patient_name.split()[0][0] }}{{ appt.patient_name.split()[-1][0] }}
+                                AJ
                             </div>
                             <div>
-                                <div class="person-name">{{ appt.patient_name }}</div>
+                                <div class="person-name">{{ appt.first_name }} {{ appt.last_name }}</div>
                             </div>
                         </div>
                     </td>
@@ -686,12 +594,12 @@
                     </td>
 
                     <td>
-                        <span class="age-badge">{{ appt.age }}</span>
+                        <span class="age-badge">{{ appt.dob }}</span>
                     </td>
 
-                    <td>{{ appt.appointment_time }}</td>
+                    <td>{{ appt.time }}</td>
 
-                    <td class="last-visit">{{ appt.last_visited }}</td>
+                    <td class="last-visit">{{ appt.gender }}</td>
 
                     <td>
                         <span class="status-badge {{ appt.status|lower }}">
@@ -699,19 +607,19 @@
                         </span>
                     </td>
 
-                    <td>{{ appt.contact }}</td>
+                    <td>{{ appt.phone }}</td>
 
                     <td>
                         <div class="actions">
-                            <button class="action-btn" title="View">
+                            <a href="#" class="action-btn" title="View">
                                 <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn" title="Edit">
+                            </a>
+                            <a href="#" class="action-btn" title="Edit">
                                 <i class="fas fa-pen"></i>
-                            </button>
-                            <button class="action-btn" title="More">
+                            </a>
+                            <a href="#" class="action-btn" title="More">
                                 <i class="fas fa-ellipsis-v"></i>
-                            </button>
+                            </a>
                         </div>
                     </td>
                 </tr>
@@ -727,61 +635,31 @@
 
     <div class="table-footer">
         <div class="footer-text">
-            Showing 1 to 8 of {{ total_appointments }} appointments
+            Showing {{ start_row }} to {{ end_row }} of {{ total_rows }} appointments
         </div>
 
         <div class="pagination">
-            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">4</button>
-            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            {% if current_page > 1 %}
+            <a class="page-btn"
+                href="{{ url_for('appointments', page=current_page-1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <a class="page-btn {% if p == current_page %}active{% endif %}"
+                href="{{ url_for('appointments', page=p, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                {{ p }}
+            </a>
+            {% endfor %}
+
+            {% if current_page < total_pages %} <a class="page-btn"
+                href="{{ url_for('appointments', page=current_page+1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const genderFilter = document.getElementById("genderFilter");
-        const statusFilter = document.getElementById("statusFilter");
-        const resetButton = document.getElementById("resetFilters");
-        const rows = document.querySelectorAll("#appointmentsBody tr");
-
-        function filterRows() {
-            const searchValue = searchInput.value.toLowerCase().trim();
-            const genderValue = genderFilter.value;
-            const statusValue = statusFilter.value;
-
-            rows.forEach(row => {
-                const rowText = row.innerText.toLowerCase();
-                const rowGender = row.getAttribute("data-gender");
-                const rowStatus = row.getAttribute("data-status");
-
-                const matchesSearch = rowText.includes(searchValue);
-                const matchesGender = !genderValue || rowGender === genderValue;
-                const matchesStatus = !statusValue || rowStatus === statusValue;
-
-                if (matchesSearch && matchesGender && matchesStatus) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-
-        searchInput.addEventListener("input", filterRows);
-        genderFilter.addEventListener("change", filterRows);
-        statusFilter.addEventListener("change", filterRows);
-
-        resetButton.addEventListener("click", function () {
-            searchInput.value = "";
-            genderFilter.value = "";
-            statusFilter.value = "";
-            filterRows();
-        });
-    });
-</script>
 
 {% endblock %}
