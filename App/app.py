@@ -95,6 +95,10 @@ def delete_doctor(doctor_id):
 def edit_doctor(doctor_id):
     return render_template("doctors.html")
 
+@app.route("/appointments")
+def appointments():
+    return render_template("appointments.html")
+
 
 
 
