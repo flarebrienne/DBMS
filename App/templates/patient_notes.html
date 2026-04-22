@@ -1,0 +1,35 @@
+{% extends "patient_profile.html" %}
+
+{% set notes = [
+{"date_time": "2026-04-20 09:40 AM", "note_type": "Follow-up", "note_text": "Patient reports improvement after
+medication adjustment."},
+{"date_time": "2026-04-15 10:35 AM", "note_type": "Observation", "note_text": "Vitals stable. No acute distress."},
+{"date_time": "2026-04-10 02:05 PM", "note_type": "Doctor Note", "note_text": "Continue monitoring blood pressure
+weekly."}
+] %}
+
+{% block patient_tab_content %}
+<div class="panel">
+    <div class="panel-header">Notes</div>
+    <div class="panel-body">
+        <table class="simple-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr>
+                    <td>{{ note.date_time }}</td>
+                    <td>{{ note.note_type }}</td>
+                    <td>{{ note.note_text }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

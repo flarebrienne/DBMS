@@ -1,0 +1,35 @@
+{% extends "patient_profile.html" %}
+
+
+{% block patient_tab_content %}
+<div class="panel">
+    <div class="panel-header">Admissions</div>
+    <div class="panel-body">
+        <table class="simple-table">
+            <thead>
+                <tr>
+                    <th>Admit ID</th>
+                    <th>Admit Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for adm in admissions %}
+                <tr>
+                    <td>{{ adm.admit_id }}</td>
+                    <td>{{ adm.admit_datetime }}</td>
+                    <td>{{ adm.admission_reason }}</td>
+                    <td>
+                        <span
+                            class="pill {% if adm.status == 'Active' %}pill-admitted{% else %}pill-discharged{% endif %}">
+                            {{ adm.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

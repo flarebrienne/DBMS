@@ -1,0 +1,112 @@
+{% extends "patient_profile.html" %}
+
+{% block patient_tab_content %}
+
+<style>
+    .review-btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        color: #16a34a;
+        padding: 4px;
+        line-height: 1;
+    }
+
+    .review-btn:hover {
+        color: #15803d;
+        transform: scale(1.08);
+    }
+
+    .icon-muted {
+        color: #9ca3af;
+        font-size: 16px;
+    }
+
+    .empty-state {
+        font-size: 13px;
+        color: #64748b;
+        padding: 4px 0;
+    }
+</style>
+
+<div class="panel">
+    <div class="panel-header">
+        Unreviewed Lab Tests ({{ unreviewed_lab_tests|length }})
+    </div>
+    <div class="panel-body">
+        {% if unreviewed_lab_tests %}
+        <table class="simple-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test</th>
+                    <th>Doctor</th>
+                    <th>Results</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in unreviewed_lab_tests %}
+                <tr>
+                    <td>{{ test.ordered_datetime }}</td>
+                    <td>{{ test.test_name }}</td>
+                    <td>{{ test.doctor_name }}</td>
+                    <td>{{ test.results or 'Pending result' }}</td>
+                    <td>
+                        <form method="POST"
+                            action="{{ url_for('review_lab_test', patient_id=patient.patient_id, test_id=test.test_id) }}"
+                            style="display:inline;">
+                            <button type="submit" class="review-btn" title="Mark as reviewed"
+                                onclick="return confirm('Mark this lab test as reviewed?')">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No unreviewed lab tests.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        Reviewed Lab Tests ({{ reviewed_lab_tests|length }})
+    </div>
+    <div class="panel-body">
+        {% if reviewed_lab_tests %}
+        <table class="simple-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test</th>
+                    <th>Doctor</th>
+                    <th>Results</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in reviewed_lab_tests %}
+                <tr>
+                    <td>{{ test.ordered_datetime }}</td>
+                    <td>{{ test.test_name }}</td>
+                    <td>{{ test.doctor_name }}</td>
+                    <td>{{ test.results or 'Pending result' }}</td>
+                    <td>
+                        <i class="fas fa-check-circle icon-muted" title="Reviewed"></i>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No reviewed lab tests.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

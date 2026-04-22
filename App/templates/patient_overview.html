@@ -1,0 +1,40 @@
+{% extends "patient_profile.html" %}
+
+{% block patient_tab_content %}
+<div class="stats-grid">
+    <div class="stats-card">
+        <div class="stats-label">Total Appointments</div>
+        <div class="stats-number">{{ stats.total_appointments }}</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-label">Total Admissions</div>
+        <div class="stats-number">{{ stats.total_admissions }}</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-label">Prescriptions</div>
+        <div class="stats-number">{{ stats.total_prescriptions }}</div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-label">Lab Tests</div>
+        <div class="stats-number">{{ stats.total_lab_tests }}</div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Quick Actions</div>
+    <div class="panel-body">
+        <div class="action-row">
+            <a href="#" class="action-btn">Schedule Appointment</a>
+            <a href="{{ url_for('patient_appointments', patient_id=patient.patient_id) }}" class="action-btn">See
+                Previous Appointments</a>
+            {% if admission.currently_admitted %}
+            <a href="#" class="action-btn">Discharge Patient</a>
+            {% else %}
+            <a href="#" class="action-btn">Admit Patient</a>
+            {% endif %}
+            <a href="{{ url_for('patient_medical_records', patient_id=patient.patient_id) }}" class="action-btn">Medical
+                Records</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

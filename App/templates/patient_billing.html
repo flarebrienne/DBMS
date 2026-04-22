@@ -1,0 +1,39 @@
+{% extends "patient_profile.html" %}
+
+{% set billing = {
+"consultation_fees": "$450.00",
+"admission_charges": "$1,250.00",
+"lab_charges": "$320.00",
+"pharmacy_charges": "$180.00",
+"total_balance": "$2,200.00"
+} %}
+
+{% block patient_tab_content %}
+<div class="panel">
+    <div class="panel-header">Billing</div>
+    <div class="panel-body">
+        <div class="info-list">
+            <div class="info-row">
+                <div class="info-label">Consultation Fees</div>
+                <div class="info-value">{{ billing.consultation_fees }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Admission Charges</div>
+                <div class="info-value">{{ billing.admission_charges }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Lab Charges</div>
+                <div class="info-value">{{ billing.lab_charges }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Pharmacy Charges</div>
+                <div class="info-value">{{ billing.pharmacy_charges }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Total Balance</div>
+                <div class="info-value">{{ billing.total_balance }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
