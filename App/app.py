@@ -3,6 +3,8 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pymysql as db
 from datetime import date
+from model.appointments import appointment_data
+from model.patient_profile_data import *
 
 app = Flask(__name__)
 
@@ -217,7 +219,284 @@ def appointments():
         doctor_id=doctor_id
     )
 
+@app.route("/doctor-dashboard")
+def doctor_dashboard():
+    doctor_id = 2
+    cursor = conn.cursor(db.cursors.DictCursor)
 
+    # stats: today's appointments
+    cursor.execute("""
+        SELECT COUNT(*) AS today_appointments
+        FROM appointment
+        WHERE doctor_id = %s
+          AND DATE(ap_datetime) = CURDATE()
+    """, (doctor_id,))
+    today_appointments = cursor.fetchone()["today_appointments"]
+
+    # stats: distinct patients seen by this doctor
+    cursor.execute("""
+        SELECT COUNT(DISTINCT patient_id) AS total_patients
+        FROM appointment
+        WHERE doctor_id = %s
+    """, (doctor_id,))
+    total_patients = cursor.fetchone()["total_patients"]
+
+    # stats: prescriptions this month
+    cursor.execute("""
+        SELECT COUNT(*) AS month_prescriptions
+        FROM prescription
+        WHERE doctor_id = %s
+          AND YEAR(prescribed_datetime) = YEAR(CURDATE())
+          AND MONTH(prescribed_datetime) = MONTH(CURDATE())
+    """, (doctor_id,))
+    month_prescriptions = cursor.fetchone()["month_prescriptions"]
+
+    # stats: lab tests this month
+    cursor.execute("""
+        SELECT COUNT(*) AS month_lab_tests
+        FROM laboratory_test
+        WHERE doctor_id = %s
+          AND YEAR(ordered_datetime) = YEAR(CURDATE())
+          AND MONTH(ordered_datetime) = MONTH(CURDATE())
+    """, (doctor_id,))
+    month_lab_tests = cursor.fetchone()["month_lab_tests"]
+
+    # recent patients from latest appointments for this doctor
+    cursor.execute("""
+        SELECT
+            p.patient_id,
+            p.first_name,
+            p.last_name,
+            p.gender,
+            TIMESTAMPDIFF(YEAR, p.dob, CURDATE()) AS age,
+            p.phone,
+            p.phone as dept_name,
+            MAX(a.ap_datetime) AS last_seen
+        FROM patient p
+        JOIN appointment a ON a.patient_id = p.patient_id
+        WHERE a.doctor_id = %s
+        GROUP BY p.patient_id, p.first_name, p.last_name, p.gender, p.dob, p.phone, p.phone
+        ORDER BY last_seen DESC
+        LIMIT 4
+    """, (doctor_id,))
+    recent_patients = cursor.fetchall()
+
+    # recent prescriptions
+    cursor.execute("""
+        SELECT
+            CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+            DATE_FORMAT(pr.prescribed_datetime, '%%b %%d, %%Y') AS prescribed_date,
+            CASE
+                WHEN CHAR_LENGTH(pr.dosage_instruction) > 40
+                THEN CONCAT(LEFT(pr.dosage_instruction, 40), '...')
+                ELSE pr.dosage_instruction
+            END AS dosage_preview
+        FROM prescription pr
+        JOIN patient p ON pr.patient_id = p.patient_id
+        WHERE pr.doctor_id = %s
+        ORDER BY pr.prescribed_datetime DESC
+        LIMIT 4
+    """, (doctor_id,))
+    recent_prescriptions = cursor.fetchall()
+
+    # today's schedule
+    cursor.execute("""
+        SELECT
+            DATE_FORMAT(a.ap_datetime, '%%h:%%i %%p') AS time,
+            CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+            a.reason,
+            a.status
+        FROM appointment a
+        JOIN patient p ON a.patient_id = p.patient_id
+        WHERE a.doctor_id = %s
+          AND DATE(a.ap_datetime) = CURDATE()
+        ORDER BY a.ap_datetime ASC
+        LIMIT 5
+    """, (doctor_id,))
+    today_schedule = cursor.fetchall()
+
+    cursor.close()
+
+    stats = {
+        "today_appointments": today_appointments or 0,
+        "total_patients": total_patients or 0,
+        "month_prescriptions": month_prescriptions or 0,
+        "month_lab_tests": month_lab_tests or 0,
+    }
+
+    return render_template(
+        "dashboard.html",
+        stats=stats,
+        recent_patients=recent_patients,
+        recent_prescriptions=recent_prescriptions,
+        today_schedule=today_schedule
+    )
+
+@app.route("/patient_profile")
+def patient_profile():
+    return render_template("patient_profile.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+
+@app.route("/patient/<patient_id>")
+def patient_overview(patient_id):
+    return render_template("patient_overview.html", active_tab="overview")
+
+@app.route("/patient/<patient_id>/appointments")
+def patient_appointments(patient_id):
+    doctor_id = 2;
+    appointment = appointment_data(db=db, conn=conn, patient_id=patient_id, doctor_id=doctor_id) 
+    patients_profile = patient_profile_data(db, conn, patient_id)
+    adm = admission(db, conn, patient_id);
+    stats = patient_statistics(db, conn, patient_id)
+    return render_template(
+                "patient_appointments.html", 
+                upcoming_appointments=appointment["upcoming_appointments"], 
+                past_appointments = appointment["past_appointments"], 
+                patient=patients_profile,
+                stats=stats,
+                active_tab="appointments"
+        )
+
+
+@app.route("/patient/<patient_id>/admissions")
+def patient_admissions(patient_id):
+    doctor_id = 2;
+    patients_profile = patient_profile_data(db, conn, patient_id)
+    adm = admission(db, conn, patient_id);
+    return render_template("patient_admissions.html", admissions=adm, patient=patients_profile, active_tab="admissions")
+
+@app.route("/patient/<patient_id>/medical-records")
+def patient_medical_records(patient_id):
+    doctor_id = 2;
+    patients_profile = patient_profile_data(db, conn, patient_id)
+    records = medical_record(db, conn, patient_id)
+    return render_template("patient_medical_records.html", medical_records=records, patient=patients_profile, active_tab="medical_records")
+
+@app.route("/patient/<int:patient_id>/add-note", methods=["POST"])
+def add_note(patient_id):
+    note_text = request.form.get("note_text", "").strip()
+    note_type = request.form.get("note_type", "").strip()
+
+    if not note_text:
+        return redirect(url_for("patient_medical_records", patient_id=patient_id))
+
+    nurse_id = 1  # replace later with logged-in nurse/admin ID
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO medical_record_notes
+        (note_text, note_type, date_time, patient_id, nurse_id)
+        VALUES (%s, %s, NOW(), %s, %s)
+    """, (note_text, note_type, patient_id, nurse_id))
+
+    conn.commit()
+    cursor.close()
+
+    return redirect(url_for("patient_medical_records", patient_id=patient_id))
+
+@app.route("/patient/<int:patient_id>/add-appointment", methods=["POST"])
+def add_appointment(patient_id):
+    ap_datetime = request.form.get("ap_datetime")
+    doctor_id = request.form.get("doctor_id")
+    reason = request.form.get("reason")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO appointment
+        (ap_datetime, reason, status, patient_id, doctor_id, dept_name)
+        VALUES (%s, %s, 'Pending', %s, %s,
+               (SELECT dept_name FROM doctor WHERE doctor_id = %s))
+    """, (ap_datetime, reason, patient_id, doctor_id, doctor_id))
+
+    conn.commit()
+    cursor.close()
+
+    return redirect(request.referrer)
+
+@app.route("/patient/<patient_id>/prescriptions")
+def patient_prescriptions(patient_id):
+    profile = patient_profile_data(db, conn, patient_id)
+
+    cursor = conn.cursor(db.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT
+            DATE(prescribed_datetime) AS prescribed_datetime,
+            CONCAT('Dr ', d.first_name, ' ', d.last_name) AS doctor_name,
+            p.dosage_instruction,
+            p.start_date,
+            p.end_date
+        FROM prescription p
+        LEFT JOIN doctor d ON d.doctor_id = p.doctor_id
+        WHERE p.patient_id = %s
+        ORDER BY p.prescribed_datetime DESC
+    """, (patient_id,))
+
+    prescriptions = cursor.fetchall()
+    cursor.close()
+
+    return render_template(
+        "patient_prescriptions.html",
+        patient=profile,
+        prescriptions=prescriptions,
+        active_tab="prescriptions"
+    )
+
+@app.route("/patient/<int:patient_id>/create-prescription", methods=["POST"])
+def create_prescription(patient_id):
+    doctor_id = request.form.get("doctor_id")
+    dosage_instruction = request.form.get("dosage_instruction")
+    start_date = request.form.get("start_date")
+    end_date = request.form.get("end_date")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO prescription
+        (dosage_instruction, start_date, end_date, patient_id, doctor_id)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (dosage_instruction, start_date, end_date, patient_id, doctor_id))
+
+    conn.commit()
+    cursor.close()
+
+    return redirect(url_for("patient_prescriptions", patient_id=patient_id))
+    
+
+@app.route("/patient/<int:patient_id>/lab-tests")
+def patient_lab_tests(patient_id):
+    profile = patient_profile_data(db, conn, patient_id)
+    tests = lab_test_data(db, conn, patient_id)
+
+    return render_template(
+        "patient_lab_tests.html",
+        patient=profile,
+        reviewed_lab_tests=tests["reviewed_lab_tests"],
+        unreviewed_lab_tests = tests["unreviewed_lab_tests"],
+        active_tab="lab_tests"
+    )
+
+
+@app.route("/patient/<int:patient_id>/lab-tests/<int:test_id>/review", methods=["POST"])
+def review_lab_test(patient_id, test_id):
+    mark_lab_test_reviewed(db, conn, patient_id, test_id)
+    return redirect(url_for("patient_lab_tests", patient_id=patient_id))
+
+
+
+@app.route("/patient/<patient_id>/notes")
+def patient_notes(patient_id):
+    return render_template("patient_notes.html", active_tab="notes")
+
+@app.route("/patient/<patient_id>/billing")
+def patient_billing(patient_id):
+    return render_template("patient_billing.html", active_tab="billing")
 
 
 @app.route("/favicon.ico")
