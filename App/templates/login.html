@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Hospital MS</title>
+
+    <style>
+        body {
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-wrapper {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-panel {
+            width: 420px;
+            background: #fff;
+            border: 1px solid #e8edf3;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .login-header {
+            padding: 18px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+            border-bottom: 1px solid #edf2f7;
+            text-align: center;
+        }
+
+        .login-body {
+            padding: 20px;
+        }
+
+        .role-select {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .role-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-panel">
+
+            <div class="login-header">
+                Hospital MS Login
+            </div>
+
+            <div class="login-body">
+                <form method="POST" action="{{ url_for('login') }}">
+
+                    <!-- Role Toggle -->
+                    <div class="role-select">
+                        <button type="button" class="role-btn active" onclick="selectRole('admin')">
+                            Admin
+                        </button>
+                        <button type="button" class="role-btn" onclick="selectRole('doctor')">
+                            Doctor
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="role" id="role" value="admin">
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" name="email" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="login-btn">
+                        Login
+                    </button>
+
+                    <div class="footer-note">
+                        Secure access to Hospital Management System
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.getElementById("role").value = role;
+
+            let buttons = document.querySelectorAll(".role-btn");
+            buttons.forEach(btn => btn.classList.remove("active"));
+
+            if (role === "admin") {
+                buttons[0].classList.add("active");
+            } else {
+                buttons[1].classList.add("active");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,12 +1,13 @@
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import pymysql as db
 from datetime import date
 from model.appointments import appointment_data
 from model.patient_profile_data import *
 
 app = Flask(__name__)
+app.secret_key = "thisismysecretkey"
 
 conn = db.connect(
     host="mysql-3122869c-abdourahmanbarry7-9e3e.b.aivencloud.com",
@@ -48,43 +49,45 @@ def doctors():
     out = cursor.fetchall()
     return render_template("doctors.html", doctors=out)
 
-@app.route("/view_doctor/<int:doctor_id>")
-def view_doctor(doctor_id):
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT doctor_id, first_name, last_name, specialty, email, dept_name FROM doctor WHERE doctor_id={doctor_id};")
-    doctor = cursor.fetchone()
-    cursor.execute(f"SELECT COUNT(*) FROM patient;")
-    total_patients = cursor.fetchone()
-    cursor.execute(f"SELECT COUNT(*) FROM appointment WHERE DATE(ap_datetime)=CURDATE();")
-    appointments_today = cursor.fetchone()
-    cursor.execute(f"SELECT COUNT(*)  FROM admission WHERE doctor_id={doctor_id} AND status='Active';")
-    active_admissions = cursor.fetchone()
-    cursor.execute(f""" SELECT CONCAT(p.first_name, p.last_name) AS patient_name,
-                        DATE(a.ap_datetime) AS date,
-                        TIME(ap_datetime) AS time,
-                        status
-                        FROM patient as p join appointment as a
-                        ON p.patient_id=a.patient_id order by ap_datetime;""")
-    upcoming_appointments = cursor.fetchall()
-    cursor.execute(f"""SELECT CONCAT(p.first_name, p.last_name), ward, room, bed_no, admit_datetime
-                       FROM admission AS a join patient AS  p join beds AS b
-                       WHERE a.patient_id=p.patient_id and b.admit_id = a.admit_id;""")
-    admissions = cursor.fetchall()
 
-    return render_template(
-    "doctor_profile.html",
-    doctor=doctor,
-    total_patients=total_patients,
-    appointments_today=appointments_today,
-    active_admissions=active_admissions,
-    doctor_status="Active",
-    on_call_status="No",
-    next_available_slot="2026-04-12 10:30 AM",
-    upcoming_appointments=upcoming_appointments,
-    patients=[],
-    admissions=admissions,
-    recent_activity=[]
-)
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        role = request.form.get("role")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        cursor = conn.cursor(db.cursors.DictCursor)
+
+        if role == "admin":
+            cursor.execute("""
+                SELECT * FROM hospital_administrator
+                WHERE email = %s
+            """, (email,))
+            user = cursor.fetchone()
+
+            if user:
+                session["user_id"] = user["admin_id"]
+                session["role"] = "Admin"
+                user["first_name"] + " " + user["last_name"]
+                return redirect(url_for("admin_dashboard"))
+
+        elif role == "doctor":
+            cursor.execute("""
+                SELECT * FROM doctor
+                WHERE email = %s
+            """, (email,))
+            user = cursor.fetchone()
+
+            if user:
+                session["user_id"] = user["doctor_id"]
+                session["role"] = "Doctor"
+                session["username"] = user["first_name"] + " " + user["last_name"]
+                return redirect(url_for("doctor_dashboard", doctor_id=user["doctor_id"]))
+
+        return "Invalid login"
+
+    return render_template("login.html")
 
 @app.route("/delete_doctor/<int:doctor_id>", methods=["POST", "GET"])
 def delete_doctor(doctor_id):
@@ -216,12 +219,14 @@ def appointments():
         total_pages=total_pages,
         start_row=start_row,
         end_row=end_row,
-        doctor_id=doctor_id
+        doctor_id=doctor_id,
+        role=session["role"],
+        username=session["username"]
     )
 
 @app.route("/doctor-dashboard")
 def doctor_dashboard():
-    doctor_id = 2
+    doctor_id = session["user_id"]
     cursor = conn.cursor(db.cursors.DictCursor)
 
     # stats: today's appointments
@@ -329,7 +334,10 @@ def doctor_dashboard():
         stats=stats,
         recent_patients=recent_patients,
         recent_prescriptions=recent_prescriptions,
-        today_schedule=today_schedule
+        today_schedule=today_schedule,
+        active_tab="dashboard",
+        role=session["role"],
+        username=session["username"]
     )
 
 @app.route("/patient_profile")
@@ -347,7 +355,7 @@ def patient_overview(patient_id):
 
 @app.route("/patient/<patient_id>/appointments")
 def patient_appointments(patient_id):
-    doctor_id = 2;
+    doctor_id = session["user_id"]
     appointment = appointment_data(db=db, conn=conn, patient_id=patient_id, doctor_id=doctor_id) 
     patients_profile = patient_profile_data(db, conn, patient_id)
     adm = admission(db, conn, patient_id);
@@ -358,7 +366,9 @@ def patient_appointments(patient_id):
                 past_appointments = appointment["past_appointments"], 
                 patient=patients_profile,
                 stats=stats,
-                active_tab="appointments"
+                active_tab="appointments",
+                role=session["role"],
+                username=session["username"]
         )
 
 
@@ -367,14 +377,16 @@ def patient_admissions(patient_id):
     doctor_id = 2;
     patients_profile = patient_profile_data(db, conn, patient_id)
     adm = admission(db, conn, patient_id);
-    return render_template("patient_admissions.html", admissions=adm, patient=patients_profile, active_tab="admissions")
+    return render_template("patient_admissions.html", admissions=adm, patient=patients_profile, role=session["role"],
+                username=session["username"], active_tab="admissions")
 
 @app.route("/patient/<patient_id>/medical-records")
 def patient_medical_records(patient_id):
     doctor_id = 2;
     patients_profile = patient_profile_data(db, conn, patient_id)
     records = medical_record(db, conn, patient_id)
-    return render_template("patient_medical_records.html", medical_records=records, patient=patients_profile, active_tab="medical_records")
+    return render_template("patient_medical_records.html", medical_records=records, patient=patients_profile, role=session["role"],
+                username=session["username"], active_tab="medical_records")
 
 @app.route("/patient/<int:patient_id>/add-note", methods=["POST"])
 def add_note(patient_id):
@@ -445,6 +457,8 @@ def patient_prescriptions(patient_id):
         "patient_prescriptions.html",
         patient=profile,
         prescriptions=prescriptions,
+        role=session["role"],
+        username=session["username"],
         active_tab="prescriptions"
     )
 
@@ -479,7 +493,8 @@ def patient_lab_tests(patient_id):
         patient=profile,
         reviewed_lab_tests=tests["reviewed_lab_tests"],
         unreviewed_lab_tests = tests["unreviewed_lab_tests"],
-        active_tab="lab_tests"
+        active_tab="lab_tests",
+        role=session["role"]
     )
 
 
