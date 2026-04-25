@@ -175,3 +175,10 @@ CREATE TABLE Hospital_Administrator (
     dept_name VARCHAR(100),
     FOREIGN KEY (dept_name) REFERENCES Department(dept_name)
 );
+
+create table doc_patients (
+    patient_id INT PRIMARY KEY,
+    doctor_id INT,
+    FOREIGN KEY doctor_id REFERENCES doctor(doctor_id),
+    FOREIGN KEY patient_id REFERENCES patient(patient_id)
+ );

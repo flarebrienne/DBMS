@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    /* Use the same CSS from your appointments page */
+    .page-header,
+    .table-toolbar,
+    .header-actions,
+    .toolbar-actions,
+    .person-cell,
+    .actions,
+    .table-footer,
+    .pagination {
+        display: flex;
+    }
+
+    .page-header {
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .page-title h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .page-title p {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .btn-primary {
+        height: 42px;
+        border: none;
+        border-radius: 10px;
+        padding: 0 16px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .table-card {
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+    }
+
+    .table-toolbar {
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf2f7;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .table-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .toolbar-actions {
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+    .search-box input,
+    .filter-select {
+        height: 38px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        outline: none;
+        font-size: 13px;
+        background: #fff;
+    }
+
+    .search-box input {
+        width: 220px;
+        padding: 0 12px 0 34px;
+    }
+
+    .filter-select {
+        padding: 0 12px;
+        color: #334155;
+        font-weight: 500;
+        cursor: pointer;
+        min-width: 120px;
+    }
+
+    .toolbar-btn {
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .patients-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #edf2f7;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    th {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    td {
+        font-size: 12px;
+        color: #334155;
+    }
+
+    tbody tr:hover {
+        background: #fafcff;
+    }
+
+    .person-cell {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1d4ed8;
+        font-weight: 700;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .person-name {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-badge.admitted {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-badge.discharged {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .actions {
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #fff;
+        color: #475569;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: #f8fafc;
+    }
+
+    .table-footer {
+        padding: 14px 16px;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .footer-text {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .pagination {
+        align-items: center;
+        gap: 6px;
+    }
+
+    .page-btn {
+        min-width: 32px;
+        height: 32px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #fff;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .page-btn.active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+
+    .empty-row td {
+        padding: 24px;
+        text-align: center;
+        color: #64748b;
+    }
+</style>
+
+<div class="page-header">
+    <div class="page-title">
+        <h1>Admitted Patients</h1>
+        <p>View and manage all currently admitted patients.</p>
+    </div>
+
+    <div class="header-actions">
+        <a href="#" class="btn-primary">
+            <i class="fas fa-plus"></i>
+            New Admission
+        </a>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="table-toolbar">
+        <div class="table-title">Admitted Patients List</div>
+
+        <form method="GET" action="{{ url_for('admitted_patients') }}" class="toolbar-actions">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" value="{{ current_search }}" placeholder="Search patient...">
+            </div>
+
+            <select class="filter-select" name="gender">
+                <option value="">Gender</option>
+                <option value="M" {% if current_gender=="M" %}selected{% endif %}>Male</option>
+                <option value="F" {% if current_gender=="F" %}selected{% endif %}>Female</option>
+            </select>
+
+            <select class="filter-select" name="status">
+                <option value="">Status</option>
+                <option value="Admitted" {% if current_status=="Admitted" %}selected{% endif %}>Admitted</option>
+                <option value="Pending" {% if current_status=="Pending" %}selected{% endif %}>Pending</option>
+                <option value="Discharged" {% if current_status=="Discharged" %}selected{% endif %}>Discharged</option>
+            </select>
+
+            <button class="toolbar-btn" type="submit">
+                <i class="fas fa-filter"></i>
+                Apply
+            </button>
+
+            <a class="toolbar-btn" href="{{ url_for('admitted_patients') }}">
+                <i class="fas fa-rotate-left"></i>
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <div class="patients-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Gender</th>
+                    <th>Age/DOB</th>
+                    <th>Admission Date</th>
+                    <th>Doctor</th>
+                    <th>Department</th>
+                    <th>Bed No.</th>
+                    <th>Status</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if admitted_patients %}
+                {% for patient in admitted_patients %}
+                <tr>
+                    <td>{{ loop.index + ((current_page - 1) * per_page) }}</td>
+
+                    <td>
+                        <div class="person-cell">
+                            <div class="avatar">
+                                {{ patient.first_name[0] }}{{ patient.last_name[0] }}
+                            </div>
+                            <div>
+                                <div class="person-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td><span class="badge">{{ patient.gender }}</span></td>
+
+                    <td><span class="badge">{{ patient.dob }}</span></td>
+
+                    <td>{{ patient.admission_date }}</td>
+
+                    <td>Dr. {{ patient.doctor_first_name }} {{ patient.doctor_last_name }}</td>
+
+                    <td>{{ patient.dept_name }}</td>
+
+                    <td>{{ patient.bed_no }}</td>
+
+                    <td>
+                        <span class="status-badge {{ patient.status|lower }}">
+                            {{ patient.status }}
+                        </span>
+                    </td>
+
+                    <td>{{ patient.phone }}</td>
+
+                    <td>
+                        <div class="actions">
+                            <a href="#" class="action-btn" title="View">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Discharge">
+                                <i class="fas fa-right-from-bracket"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="11">No admitted patients found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-footer">
+        <div class="footer-text">
+            Showing {{ start_row }} to {{ end_row }} of {{ total_rows }} admitted patients
+        </div>
+
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a class="page-btn"
+                href="{{ url_for('admitted_patients', page=current_page-1, search=current_search, gender=current_gender, status=current_status) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <a class="page-btn {% if p == current_page %}active{% endif %}"
+                href="{{ url_for('admitted_patients', page=p, search=current_search, gender=current_gender, status=current_status) }}">
+                {{ p }}
+            </a>
+            {% endfor %}
+
+            {% if current_page < total_pages %} <a class="page-btn"
+                href="{{ url_for('admitted_patients', page=current_page+1, search=current_search, gender=current_gender, status=current_status) }}">
+                <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

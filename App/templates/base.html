@@ -381,28 +381,23 @@
             <ul class="sidebar-nav">
                 <li>
                     <a href="{{ url_for('doctor_dashboard')}}"
-                        class="{% if request.endpoint == 'doctor-dashboard' %}active{% endif %}">
+                        class="{% if request.endpoint == 'doctor-dashboard' or active_tab=='dashboard' %}active{% endif %}">
                         <i class="fa-solid fa-house"></i>
                         <span class="nav-text">Dashboard</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ url_for('patients') }}"
-                        class="{% if request.endpoint == 'patients' %}active{% endif %}">
+                        class="{% if request.endpoint == 'patients' or active_tab=='patients' %}active{% endif %}">
                         <i class="fa-solid fa-user-group"></i>
                         <span class="nav-text">Patients</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="{% if request.endpoint == 'admissions' %}active{% endif %}">
+                    <a href="{{ url_for('admitted_patients') }}"
+                        class="{% if request.endpoint == 'admissions' or active_tab=='admission'%}active{% endif %}">
                         <i class="fa-solid fa-clipboard-list"></i>
                         <span class="nav-text">Admissions</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('doctors') }}" class="{% if request.endpoint == 'doctors' %}active{% endif %}">
-                        <i class="fa-solid fa-user-doctor"></i>
-                        <span class="nav-text">Doctors</span>
                     </a>
                 </li>
                 <li>
@@ -410,6 +405,13 @@
                         class="{% if request.endpoint == 'appointments' %}active{% endif %}">
                         <i class="fa-solid fa-calendar-check"></i>
                         <span class="nav-text">Appointments</span>
+                    </a>
+                </li>
+                {% if role != 'Doctor'%}
+                <li>
+                    <a href="{{ url_for('doctors') }}" class="{% if request.endpoint == 'doctors' %}active{% endif %}">
+                        <i class="fa-solid fa-user-doctor"></i>
+                        <span class="nav-text">Doctors</span>
                     </a>
                 </li>
                 <li>
@@ -436,6 +438,7 @@
                         <span class="nav-text">Settings</span>
                     </a>
                 </li>
+                {% endif %}
             </ul>
         </div>
 

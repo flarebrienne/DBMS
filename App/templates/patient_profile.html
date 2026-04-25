@@ -2,8 +2,6 @@
 
 {% block content %}
 
-
-
 <style>
     .patient-page {
         display: flex;
@@ -11,7 +9,7 @@
         gap: 18px;
     }
 
-    .profile-card,
+    .patient-profile-card,
     .panel,
     .stats-card {
         background: #fff;
@@ -20,18 +18,18 @@
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
     }
 
-    .profile-card {
+    .patient-profile-card {
         padding: 20px;
     }
 
-    .profile-top {
+    .patient-profile-top {
         display: grid;
-        grid-template-columns: auto 1fr 1fr;
+        grid-template-columns: auto 1fr;
         gap: 18px;
         align-items: start;
     }
 
-    .avatar {
+    .patient-profile-avatar {
         width: 88px;
         height: 88px;
         border-radius: 50%;
@@ -42,16 +40,17 @@
         justify-content: center;
         font-size: 28px;
         font-weight: 700;
+        flex-shrink: 0;
     }
 
-    .patient-name {
+    .patient-profile-name {
         font-size: 28px;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 6px;
     }
 
-    .status-badge {
+    .patient-profile-status {
         display: inline-block;
         padding: 5px 10px;
         border-radius: 999px;
@@ -63,20 +62,20 @@
         vertical-align: middle;
     }
 
-    .patient-meta,
-    .patient-contact,
-    .patient-side {
+    .patient-profile-meta,
+    .patient-profile-contact {
         display: grid;
         gap: 8px;
         font-size: 14px;
         color: #334155;
     }
 
-    .meta-muted {
+    .patient-profile-muted {
         color: #64748b;
     }
 
-    .tabs {
+    /* Tabs are fully isolated to avoid affecting child templates */
+    .patient-tabs {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
@@ -84,7 +83,7 @@
         padding-bottom: 8px;
     }
 
-    .tab-link {
+    .patient-tabs__link {
         text-decoration: none;
         color: #475569;
         font-size: 14px;
@@ -92,40 +91,72 @@
         padding: 10px 14px;
         border-radius: 10px;
         transition: 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .tab-link:hover {
+    .patient-tabs__link:hover {
         background: #f8fafc;
     }
 
-    .tab-link.active {
+    .patient-tabs__link.active {
         background: #eff6ff;
         color: #2563eb;
     }
 
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
+    .patient-tabs__icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
     }
 
-    .stats-card {
-        padding: 16px;
+    .patient-tabs__icon--overview {
+        background: #e0ecff;
+        color: #2563eb;
     }
 
-    .stats-label {
-        font-size: 13px;
-        color: #64748b;
-        font-weight: 600;
-        margin-bottom: 6px;
+    .patient-tabs__icon--appointments {
+        background: #dcfce7;
+        color: #16a34a;
     }
 
-    .stats-number {
-        font-size: 28px;
-        font-weight: 700;
-        color: #1e293b;
+    .patient-tabs__icon--admissions {
+        background: #f3e8ff;
+        color: #7c3aed;
     }
 
+    .patient-tabs__icon--records {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .patient-tabs__icon--prescriptions {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .patient-tabs__icon--labs {
+        background: #ccfbf1;
+        color: #0d9488;
+    }
+
+    .patient-tabs__icon--notes {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .patient-tabs__icon--billing {
+        background: #ffedd5;
+        color: #ea580c;
+    }
+
+    /* Shared child-page styles */
     .panel-header {
         padding: 14px 16px;
         border-bottom: 1px solid #edf2f7;
@@ -139,27 +170,6 @@
 
     .panel-body {
         padding: 16px;
-    }
-
-    .info-list {
-        display: grid;
-        gap: 12px;
-    }
-
-    .info-row {
-        display: grid;
-        grid-template-columns: 140px 1fr;
-        gap: 10px;
-        font-size: 14px;
-    }
-
-    .info-label {
-        color: #64748b;
-    }
-
-    .info-value {
-        color: #1e293b;
-        font-weight: 500;
     }
 
     .simple-table {
@@ -178,6 +188,10 @@
     .simple-table th {
         color: #64748b;
         font-weight: 700;
+    }
+
+    .simple-table td {
+        color: #334155;
     }
 
     .pill {
@@ -213,60 +227,39 @@
         color: #475569;
     }
 
-    .action-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-
-    .action-btn {
-        display: inline-block;
-        text-decoration: none;
-        padding: 12px 16px;
-        border-radius: 10px;
-        border: 1px solid #dbe2ea;
-        background: #fff;
-        color: #1e293b;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .action-btn:hover {
-        background: #f8fafc;
-    }
-
     @media (max-width: 1100px) {
-
-        .profile-top,
-        .stats-grid {
+        .patient-profile-top {
             grid-template-columns: 1fr;
         }
     }
 
     @media (max-width: 700px) {
-        .info-row {
-            grid-template-columns: 1fr;
-            gap: 4px;
+        .patient-tabs {
+            flex-direction: column;
+        }
+
+        .patient-tabs__link {
+            width: 100%;
         }
     }
 </style>
 
 <div class="patient-page">
-    <div class="profile-card">
-        <div class="profile-top">
-            <div class="avatar">
+    <div class="patient-profile-card">
+        <div class="patient-profile-top">
+            <div class="patient-profile-avatar">
                 {{ patient.first_name[0] }}{{ patient.last_name[0] }}
             </div>
 
             <div>
-                <div class="patient-name">
+                <div class="patient-profile-name">
                     {{ patient.first_name }} {{ patient.last_name }}
-                    <span class="status-badge">{{ patient.status }}</span>
+                    <span class="patient-profile-status">{{ patient.status }}</span>
                 </div>
 
-                <div class="patient-meta">
+                <div class="patient-profile-meta">
                     <div>
-                        <span class="meta-muted">PID:</span> {{ patient.patient_id }}
+                        <span class="patient-profile-muted">PID:</span> {{ patient.patient_id }}
                         &nbsp; | &nbsp;
                         {{ patient.gender }}, {{ patient.age }} Y
                         &nbsp; | &nbsp;
@@ -274,47 +267,81 @@
                     </div>
                 </div>
 
-                <div class="patient-contact" style="margin-top: 12px;">
+                <div class="patient-profile-contact" style="margin-top: 12px;">
                     <div><strong>Phone:</strong> {{ patient.phone }}</div>
                     <div><strong>Email:</strong> {{ patient.email }}</div>
                     <div><strong>Address:</strong> {{ patient.address }}</div>
                 </div>
             </div>
-
-            <!-- <div class="patient-side">
-                <div><span class="meta-muted">Department</span><br>{{ patient.dept_name }}</div>
-                <div><span class="meta-muted">Primary Doctor</span><br>{{ patient.primary_doctor }}</div>
-                <div><span class="meta-muted">Registered On</span><br>{{ patient.registered_on }}</div>
-            </div> -->
         </div>
     </div>
 
-    <div class="tabs">
-        <a href="{{ url_for('patient_overview', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'overview' %}active{% endif %}">Overview</a>
+    <div class="patient-tabs">
+        <a href="#" class="patient-tabs__link {% if active_tab == 'overview' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--overview">
+                <i class="fas fa-user"></i>
+            </span>
+            Overview
+        </a>
 
         <a href="{{ url_for('patient_appointments', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'appointments' %}active{% endif %}">Appointments</a>
+            class="patient-tabs__link {% if active_tab == 'appointments' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--appointments">
+                <i class="fas fa-calendar-check"></i>
+            </span>
+            Appointments
+        </a>
 
         <a href="{{ url_for('patient_admissions', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'admissions' %}active{% endif %}">Admissions</a>
+            class="patient-tabs__link {% if active_tab == 'admissions' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--admissions">
+                <i class="fas fa-bed-pulse"></i>
+            </span>
+            Admissions
+        </a>
 
         <a href="{{ url_for('patient_medical_records', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'medical_records' %}active{% endif %}">Medical Records</a>
+            class="patient-tabs__link {% if active_tab == 'medical_records' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--records">
+                <i class="fas fa-notes-medical"></i>
+            </span>
+            Medical Records
+        </a>
 
         <a href="{{ url_for('patient_prescriptions', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'prescriptions' %}active{% endif %}">Prescriptions</a>
+            class="patient-tabs__link {% if active_tab == 'prescriptions' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--prescriptions">
+                <i class="fas fa-prescription-bottle-medical"></i>
+            </span>
+            Prescriptions
+        </a>
 
         <a href="{{ url_for('patient_lab_tests', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'lab_tests' %}active{% endif %}">Lab Tests</a>
+            class="patient-tabs__link {% if active_tab == 'lab_tests' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--labs">
+                <i class="fas fa-vial"></i>
+            </span>
+            Lab Tests
+        </a>
 
         <a href="{{ url_for('patient_notes', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'notes' %}active{% endif %}">Notes</a>
+            class="patient-tabs__link {% if active_tab == 'notes' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--notes">
+                <i class="fas fa-sticky-note"></i>
+            </span>
+            Notes
+        </a>
 
         <a href="{{ url_for('patient_billing', patient_id=patient.patient_id) }}"
-            class="tab-link {% if active_tab == 'billing' %}active{% endif %}">Billing</a>
+            class="patient-tabs__link {% if active_tab == 'billing' %}active{% endif %}">
+            <span class="patient-tabs__icon patient-tabs__icon--billing">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </span>
+            Billing
+        </a>
     </div>
 
     {% block patient_tab_content %}{% endblock %}
 </div>
+
 {% endblock %}

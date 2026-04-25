@@ -23,17 +23,194 @@
         font-size: 16px;
     }
 
+    .pending-icon {
+        color: #d97706;
+        font-size: 16px;
+    }
+
     .empty-state {
         font-size: 13px;
         color: #64748b;
         padding: 4px 0;
     }
+
+    .result-btn {
+        border: none;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .result-btn:hover {
+        background: #dbeafe;
+    }
+
+    .result-modal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .result-modal.show {
+        display: flex;
+    }
+
+    .result-modal-content {
+        background: #fff;
+        width: 100%;
+        max-width: 460px;
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+        overflow: hidden;
+    }
+
+    .result-modal-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(135deg, #eff6ff, #ffffff);
+    }
+
+    .result-modal-header h3 {
+        margin: 0;
+        color: #1e293b;
+        font-size: 18px;
+    }
+
+    .result-modal-header p {
+        margin: 4px 0 0;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .result-modal-body {
+        padding: 20px;
+    }
+
+    .result-modal-body label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+
+    .result-modal-body textarea {
+        width: 100%;
+        min-height: 120px;
+        border: 1px solid #dbe2ea;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        outline: none;
+        resize: vertical;
+        box-sizing: border-box;
+    }
+
+    .result-modal-body textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .result-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .result-cancel-btn,
+    .result-submit-btn {
+        height: 38px;
+        padding: 0 14px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .result-cancel-btn {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .result-cancel-btn:hover {
+        background: #e2e8f0;
+    }
+
+    .result-submit-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    .result-submit-btn:hover {
+        background: #1d4ed8;
+    }
 </style>
+
+<div class="panel">
+    <div class="panel-header">
+        Pending Lab Tests ({{ pending_lab_tests|length }})
+    </div>
+
+    <div class="panel-body">
+        {% if pending_lab_tests %}
+        <table class="simple-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test</th>
+                    <th>Doctor</th>
+                    <th>Results</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for test in pending_lab_tests %}
+                <tr>
+                    <td>{{ test.ordered_datetime }}</td>
+                    <td>{{ test.test_name }}</td>
+                    <td>{{ test.doctor_name }}</td>
+                    <td>
+                        <i class="fas fa-clock pending-icon"></i>
+                        Pending result
+                    </td>
+                    <td>
+                        <button type="button" class="result-btn"
+                            onclick="openResultModal('{{ test.test_id }}', '{{ test.test_name }}')">
+                            <i class="fas fa-pen"></i>
+                            Enter Results
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No pending lab tests.</div>
+        {% endif %}
+    </div>
+</div>
 
 <div class="panel">
     <div class="panel-header">
         Unreviewed Lab Tests ({{ unreviewed_lab_tests|length }})
     </div>
+
     <div class="panel-body">
         {% if unreviewed_lab_tests %}
         <table class="simple-table">
@@ -46,13 +223,14 @@
                     <th>Action</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for test in unreviewed_lab_tests %}
                 <tr>
                     <td>{{ test.ordered_datetime }}</td>
                     <td>{{ test.test_name }}</td>
                     <td>{{ test.doctor_name }}</td>
-                    <td>{{ test.results or 'Pending result' }}</td>
+                    <td>{{ test.results }}</td>
                     <td>
                         <form method="POST"
                             action="{{ url_for('review_lab_test', patient_id=patient.patient_id, test_id=test.test_id) }}"
@@ -77,6 +255,7 @@
     <div class="panel-header">
         Reviewed Lab Tests ({{ reviewed_lab_tests|length }})
     </div>
+
     <div class="panel-body">
         {% if reviewed_lab_tests %}
         <table class="simple-table">
@@ -89,13 +268,14 @@
                     <th>Status</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for test in reviewed_lab_tests %}
                 <tr>
                     <td>{{ test.ordered_datetime }}</td>
                     <td>{{ test.test_name }}</td>
                     <td>{{ test.doctor_name }}</td>
-                    <td>{{ test.results or 'Pending result' }}</td>
+                    <td>{{ test.results }}</td>
                     <td>
                         <i class="fas fa-check-circle icon-muted" title="Reviewed"></i>
                     </td>
@@ -108,5 +288,51 @@
         {% endif %}
     </div>
 </div>
+
+<div id="resultModal" class="result-modal">
+    <div class="result-modal-content">
+        <div class="result-modal-header">
+            <h3>Enter Lab Results</h3>
+            <p id="resultTestName">Add results for this lab test.</p>
+        </div>
+
+        <div class="result-modal-body">
+            <form id="resultForm" method="POST">
+                <label>Results</label>
+                <textarea name="results" required placeholder="Enter lab test results..."></textarea>
+
+                <div class="result-modal-actions">
+                    <button type="button" class="result-cancel-btn" onclick="closeResultModal()">Cancel</button>
+                    <button type="submit" class="result-submit-btn">Save Results</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openResultModal(testId, testName) {
+        const modal = document.getElementById("resultModal");
+        const form = document.getElementById("resultForm");
+        const title = document.getElementById("resultTestName");
+
+        form.action = `/patient/{{ patient.patient_id }}/lab-tests/${testId}/add-result`;
+        title.textContent = `Add results for ${testName}`;
+
+        modal.classList.add("show");
+    }
+
+    function closeResultModal() {
+        document.getElementById("resultModal").classList.remove("show");
+    }
+
+    window.addEventListener("click", function (event) {
+        const modal = document.getElementById("resultModal");
+
+        if (event.target === modal) {
+            closeResultModal();
+        }
+    });
+</script>
 
 {% endblock %}

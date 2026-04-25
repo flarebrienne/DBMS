@@ -1,54 +1,557 @@
-
 {% extends "base.html" %}
 
-{% block title %}Patients{% endblock %}
-
 {% block content %}
-        <main class="content">
-            <div class="topbar">
-                <h1>Patients</h1>
-                <a href="{{ url_for('add_patient') }}" class="btn">+ Add Patient</a>
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .page-title h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .page-title p {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .stat-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.blue {
+        background: #e0ecff;
+        color: #2563eb;
+    }
+
+    .stat-icon.green {
+        background: #def7e8;
+        color: #16a34a;
+    }
+
+    .stat-icon.yellow {
+        background: #fff4d6;
+        color: #d97706;
+    }
+
+    .stat-icon.red {
+        background: #ffe3e3;
+        color: #ef4444;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1;
+    }
+
+    .stat-subtext {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .table-card {
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+    }
+
+    .table-toolbar {
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .table-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .toolbar-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+    .search-box input {
+        width: 220px;
+        height: 38px;
+        padding: 0 12px 0 34px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        outline: none;
+        font-size: 13px;
+        background: #fff;
+    }
+
+    .filter-select {
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        outline: none;
+        min-width: 120px;
+    }
+
+    .toolbar-btn {
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .patients-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1050px;
+    }
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th {
+        text-align: left;
+        padding: 12px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 700;
+        border-bottom: 1px solid #edf2f7;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 12px;
+        font-size: 12px;
+        color: #334155;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    tbody tr:hover {
+        background: #fafcff;
+    }
+
+    .person-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1d4ed8;
+        font-weight: 700;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .person-name {
+        font-weight: 700;
+        font-size: 12px;
+        color: #1e293b;
+        margin-bottom: 2px;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .connection-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #fff;
+        color: #475569;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: #f8fafc;
+    }
+
+    .table-footer {
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .footer-text {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .page-btn {
+        min-width: 32px;
+        height: 32px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #fff;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .page-btn.active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+
+    .empty-row td {
+        padding: 24px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    @media (max-width: 1200px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title h1 {
+            font-size: 26px;
+        }
+
+        .search-box input {
+            width: 180px;
+        }
+
+        .table-title {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="page-title">
+        <h1>Doctor's Patients</h1>
+        <p>View all patients connected to Dr. {{ doctor.first_name }} {{ doctor.last_name }}.</p>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <div class="stat-label">Total Patients</div>
+                <div class="stat-number">{{ total_patients }}</div>
+            </div>
+        </div>
+        <div class="stat-subtext">All patients connected to this doctor</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div>
+                <div class="stat-label">Appointments</div>
+                <div class="stat-number">{{ appointment_patients }}</div>
+            </div>
+        </div>
+        <div class="stat-subtext">Patients seen through appointments</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon yellow">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div>
+                <div class="stat-label">Upcoming</div>
+                <div class="stat-number">{{ upcoming_appointments }}</div>
+            </div>
+        </div>
+        <div class="stat-subtext">Upcoming appointments with this doctor</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon red">
+                <i class="fas fa-bed-pulse"></i>
+            </div>
+            <div>
+                <div class="stat-label">Admitted</div>
+                <div class="stat-number">{{ admitted_patients_count }}</div>
+            </div>
+        </div>
+        <div class="stat-subtext">Currently admitted under this doctor</div>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="table-toolbar">
+        <div class="table-title">
+            Patients for Dr. {{ doctor.first_name }} {{ doctor.last_name }}
+        </div>
+
+        <form method="GET" action="{{ url_for('patients', doctor_id=doctor.doctor_id) }}" class="toolbar-actions">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" value="{{ current_search }}" placeholder="Search patient...">
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Age</th>
-                            <th>Gender</th>
-                            <th>Phone</th>
-                            <th>Gender</th>
-                            <th class="actions-col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for patient in patients %}
-                        <tr>
-                            <td>{{ patient[0]}}</td>
-                            <td>{{ patient[1]}} {{ patient[2]}}</td>
-                            <td>{{ patient[3]}}</td>
-                            <td>{{ patient[4] }}</td>
-                            <td>{{ patient[5] }}</td>
-                            <td>{{ patient[6] }}</td>
-                            <td class="actions">
-                                <a href="{{ url_for('view_patient', patient_id=patient[0]) }}" title="View">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-                                <a href="{{ url_for('edit_patient', patient_id=patient[0]) }}" title="Edit">
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
-                                <a href="{{ url_for('delete_patient', patient_id=patient[0]) }}" title="Delete"
-                                   onclick="delete({{ url_for('delete_patient', patient_id=patient[0]) }});">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </main>
+            <select class="filter-select" name="gender">
+                <option value="">Gender</option>
+                <option value="M" {% if current_gender=="M" %}selected{% endif %}>Male</option>
+                <option value="F" {% if current_gender=="F" %}selected{% endif %}>Female</option>
+            </select>
+
+            <button class="toolbar-btn" type="submit">
+                <i class="fas fa-filter"></i>
+                Apply
+            </button>
+
+            <a class="toolbar-btn" href="{{ url_for('patients', doctor_id=doctor.doctor_id) }}">
+                <i class="fas fa-rotate-left"></i>
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <div class="patients-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Gender</th>
+                    <th>DOB</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Connection</th>
+                    <th>Last Visit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if patients %}
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ loop.index + ((current_page - 1) * per_page) }}</td>
+
+                    <td>
+                        <div class="person-cell">
+                            <div class="avatar">
+                                {{ patient.first_name[0] }}{{ patient.last_name[0] }}
+                            </div>
+                            <div>
+                                <div class="person-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td><span class="badge">{{ patient.gender }}</span></td>
+                    <td>{{ patient.dob }}</td>
+                    <td>{{ patient.phone }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td><span class="connection-badge">{{ patient.connection_type }}</span></td>
+                    <td>{{ patient.last_visit if patient.last_visit else "N/A" }}</td>
+
+                    <td>
+                        <div class="actions">
+                            <a href="#" class="action-btn" title="View Patient">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Edit Patient">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{{url_for('patient_medical_records', patient_id=patient.patient_id)}}"
+                                class="action-btn" title="Medical Records">
+                                <i class="fas fa-notes-medical"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="9">No patients found for this doctor.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-footer">
+        <div class="footer-text">
+            Showing {{ start_row }} to {{ end_row }} of {{ total_rows }} patients
+        </div>
+
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a class="page-btn"
+                href="{{ url_for('patients', doctor_id=doctor.doctor_id, page=current_page-1, search=current_search, gender=current_gender) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <a class="page-btn {% if p == current_page %}active{% endif %}"
+                href="{{ url_for('patients', doctor_id=doctor.doctor_id, page=p, search=current_search, gender=current_gender) }}">
+                {{ p }}
+            </a>
+            {% endfor %}
+
+            {% if current_page < total_pages %} <a class="page-btn"
+                href="{{ url_for('patients', doctor_id=doctor.doctor_id, page=current_page+1, search=current_search, gender=current_gender) }}">
+                <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}

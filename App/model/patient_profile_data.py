@@ -105,7 +105,7 @@ def lab_test_data(db, conn, patient_id):
         FROM laboratory_test l
         JOIN doctor d ON d.doctor_id = l.doctor_id
         WHERE l.patient_id = %s
-          AND l.status = 0
+          AND l.status = 0 AND results != NULL
         ORDER BY l.ordered_datetime DESC
     """, (patient_id,))
     unreviewed = cursor.fetchall()
@@ -126,11 +126,28 @@ def lab_test_data(db, conn, patient_id):
     """, (patient_id,))
     reviewed = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT
+            l.test_id,
+            l.ordered_datetime,
+            l.test_name,
+            CONCAT(d.first_name, ' ', d.last_name) AS doctor_name,
+            l.results,
+            l.status
+        FROM laboratory_test l
+        JOIN doctor d ON d.doctor_id = l.doctor_id
+        WHERE l.patient_id = %s
+          AND l.status = 0 AND results=NULL
+        ORDER BY l.ordered_datetime DESC
+    """, (patient_id,))
+    pending_lab_tests = cursor.fetchall()
+
     cursor.close()
 
     return {
         "unreviewed_lab_tests": unreviewed,
-        "reviewed_lab_tests": reviewed
+        "reviewed_lab_tests": reviewed,
+        "pending_lab_tests":pending_lab_tests
     }
 
 
