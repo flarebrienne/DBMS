@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="page-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage patients, staff, departments, schedules, and bed inventory.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Patients</h3>
+            <div>{{ stats.total_patients }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Total Doctors</h3>
+            <div>{{ stats.total_doctors }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Total Nurses</h3>
+            <div>{{ stats.total_nurses }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Departments</h3>
+            <div>{{ stats.total_departments }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Schedules</h3>
+            <div>{{ stats.total_schedules }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Total Beds</h3>
+            <div>{{ stats.total_beds }}</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Quick Actions</div>
+        </div>
+        <div class="panel-body">
+            <div class="quick-links">
+                <a href="/add_patient_form">Register Patient</a>
+                <a href="/update_patient_form">Manage Patients</a>
+                <a href="/add_doctor_form">Add Doctor</a>
+                <a href="/update_doctor_form">Manage Doctors</a>
+                <a href="/add_nurse_form">Add Nurse</a>
+                <a href="/update_nurse_form">Manage Nurses</a>
+                <a href="/departments">Manage Departments</a>
+                <a href="/staff-schedules">Manage Schedules</a>
+                <a href="/beds">Manage Beds</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Recent Patients</div>
+        </div>
+        <div class="panel-body">
+            <table class="simple-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in recent_patients %}
+                    <tr>
+                        <td>{{ p.patient_id }}</td>
+                        <td>{{ p.first_name }} {{ p.last_name }}</td>
+                        <td>{{ p.phone }}</td>
+                        <td>{{ p.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Recent Doctors</div>
+        </div>
+        <div class="panel-body">
+            <table class="simple-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Specialty</th>
+                        <th>Department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in recent_doctors %}
+                    <tr>
+                        <td>{{ d.doctor_id }}</td>
+                        <td>{{ d.first_name }} {{ d.last_name }}</td>
+                        <td>{{ d.specialty }}</td>
+                        <td>{{ d.dept_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Recent Nurses</div>
+        </div>
+        <div class="panel-body">
+            <table class="simple-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for n in recent_nurses %}
+                    <tr>
+                        <td>{{ n.nurse_id }}</td>
+                        <td>{{ n.first_name }} {{ n.last_name }}</td>
+                        <td>{{ n.dept_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Recent Staff Schedules</div>
+        </div>
+        <div class="panel-body">
+            <table class="simple-table">
+                <thead>
+                    <tr>
+                        <th>Shift ID</th>
+                        <th>Date</th>
+                        <th>Shift Type</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Doctor</th>
+                        <th>Nurse</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in recent_schedules %}
+                    <tr>
+                        <td>{{ s.shift_id }}</td>
+                        <td>{{ s.shift_date }}</td>
+                        <td>{{ s.shift_type }}</td>
+                        <td>{{ s.start_time }}</td>
+                        <td>{{ s.end_time }}</td>
+                        <td>{{ s.doctor_id }}</td>
+                        <td>{{ s.nurse_id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Bed Inventory</div>
+        </div>
+        <div class="panel-body">
+            <table class="simple-table">
+                <thead>
+                    <tr>
+                        <th>Building</th>
+                        <th>Ward</th>
+                        <th>Room</th>
+                        <th>Bed</th>
+                        <th>Admission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bed_inventory %}
+                    <tr>
+                        <td>{{ b.building }}</td>
+                        <td>{{ b.ward }}</td>
+                        <td>{{ b.room }}</td>
+                        <td>{{ b.bed_no }}</td>
+                        <td>{{ b.admit_id if b.admit_id else "Available" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -223,7 +223,6 @@
                     <th>Action</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for test in unreviewed_lab_tests %}
                 <tr>
@@ -255,7 +254,6 @@
     <div class="panel-header">
         Reviewed Lab Tests ({{ reviewed_lab_tests|length }})
     </div>
-
     <div class="panel-body">
         {% if reviewed_lab_tests %}
         <table class="simple-table">
@@ -268,7 +266,6 @@
                     <th>Status</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for test in reviewed_lab_tests %}
                 <tr>

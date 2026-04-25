@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital Dashboard</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="{{ url_for('static', filename='javascript.js') }}"></script>
-
+    <title>Hospital Management System</title>
     <style>
         :root {
-            --sidebar-width: 235px;
-            --sidebar-collapsed-width: 82px;
-            --topbar-height: 68px;
-            --page-gap: 22px;
+            --sidebar-width: 250px;
+            --topbar-height: 70px;
+            --bg: #f4f7fb;
+            --panel: #ffffff;
+            --primary: #2563eb;
+            --dark: #0f274d;
+            --muted: #64748b;
+            --border: #e8edf3;
         }
 
         * {
@@ -26,485 +24,278 @@
         }
 
         body {
-            background: #f4f7fb;
+            background: var(--bg);
             color: #1e293b;
         }
 
-        .dashboard {
+        .layout {
             display: flex;
             min-height: 100vh;
         }
 
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: var(--sidebar-width);
-            height: 100vh;
             background: linear-gradient(180deg, #0f274d 0%, #10284c 100%);
             color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 86px 18px 20px;
-            transition: width 0.25s ease, padding 0.25s ease;
-            z-index: 1200;
-            overflow: hidden;
-        }
-
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed-width);
-            padding-left: 12px;
-            padding-right: 12px;
-        }
-
-        .sidebar-top {
-            display: flex;
-            flex-direction: column;
+            padding: 24px 18px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
         }
 
         .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 4px 10px 18px;
-            margin-bottom: 4px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
-            border-radius: 12px;
-            background: rgba(37, 99, 235, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #38bdf8;
-            font-size: 24px;
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-            white-space: nowrap;
-        }
-
-        .brand-title {
             font-size: 24px;
             font-weight: 700;
-            color: #ffffff;
+            margin-bottom: 28px;
         }
 
-        .brand-subtitle {
+        .brand small {
+            display: block;
             font-size: 12px;
             color: #b8c7e0;
-            margin-top: 2px;
-        }
-
-        .sidebar.collapsed .brand-text,
-        .sidebar.collapsed .nav-text,
-        .sidebar.collapsed .help-text,
-        .sidebar.collapsed .help-btn {
-            display: none;
+            margin-top: 4px;
         }
 
         .sidebar-nav {
             list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
         }
 
         .sidebar-nav li {
-            list-style: none;
+            margin-bottom: 8px;
         }
 
         .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 10px;
+            display: block;
+            padding: 12px 14px;
             color: #d9e4f5;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .sidebar-nav a i {
-            width: 18px;
-            min-width: 18px;
-            text-align: center;
-            font-size: 15px;
+            border-radius: 10px;
         }
 
         .sidebar-nav a:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
-        }
-
-        .sidebar-nav a.active {
-            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-            color: #ffffff;
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
-        }
-
-        .sidebar.collapsed .sidebar-nav a {
-            justify-content: center;
-            padding: 10px 0;
-        }
-
-        .sidebar-bottom {
-            margin-top: 18px;
-        }
-
-        .help-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 16px;
+            background: #2563eb;
             color: white;
         }
 
-        .help-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            color: #dbeafe;
-        }
-
-        .help-card h4 {
-            font-size: 15px;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .help-card p {
-            font-size: 12px;
-            line-height: 1.5;
-            color: #c7d5ea;
-            margin-bottom: 14px;
-        }
-
-        .help-btn {
-            width: 100%;
-            border: none;
-            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-            color: white;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 11px 14px;
-            border-radius: 10px;
-            cursor: pointer;
+        .main {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
         }
 
         .topbar {
-            position: fixed;
-            top: 0;
-            left: var(--sidebar-width);
-            right: 0;
             height: var(--topbar-height);
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            background: white;
+            border-bottom: 1px solid var(--border);
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             padding: 0 24px;
-            z-index: 1100;
-            transition: left 0.25s ease;
         }
 
-        .topbar.collapsed {
-            left: var(--sidebar-collapsed-width);
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .menu-toggle {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease;
-        }
-
-        .menu-toggle:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        .system-name {
-            font-size: 20px;
+        .topbar .title {
+            font-size: 18px;
             font-weight: 700;
-            color: #0f172a;
         }
 
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .topbar-icon {
-            color: #64748b;
-            font-size: 16px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .notif-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-img {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #e5e7eb;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-
-        .user-name {
+        .topbar .user {
+            color: var(--muted);
             font-size: 14px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .user-role {
-            font-size: 12px;
-            color: #64748b;
         }
 
         .content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            background: #f4f7fb;
-            transition: margin-left 0.25s ease;
+            padding: 24px;
         }
 
-        .content.expanded {
-            margin-left: var(--sidebar-collapsed-width);
+        .page-header {
+            margin-bottom: 20px;
         }
 
-        .content-inner {
-            padding: calc(var(--topbar-height) + var(--page-gap)) var(--page-gap) var(--page-gap);
-            min-height: 100vh;
+        .page-header h1 {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+        }
+
+        .dashboard-page {
+            width: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .stat-card div {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        }
+
+        .panel-header {
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .quick-links a {
+            text-decoration: none;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .simple-table th,
+        .simple-table td {
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 8px;
+            font-size: 14px;
+        }
+
+        .simple-table th {
+            background: #f8fafc;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .item-right {
+            color: #475569;
+            text-align: right;
         }
 
         @media (max-width: 900px) {
+            .stats-grid,
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
             .sidebar {
-                transform: translateX(0);
+                position: static;
+                width: 100%;
             }
 
-            .sidebar.collapsed {
-                transform: translateX(-100%);
-                width: var(--sidebar-width);
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .topbar,
-            .topbar.collapsed {
-                left: 0;
-            }
-
-            .content,
-            .content.expanded {
+            .main {
                 margin-left: 0;
+                width: 100%;
             }
 
-            .content-inner {
-                padding-left: 16px;
-                padding-right: 16px;
-                padding-bottom: 16px;
-                padding-top: calc(var(--topbar-height) + 16px);
+            .layout {
+                display: block;
             }
         }
     </style>
 </head>
-
 <body>
-
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-top">
+    <div class="layout">
+        <aside class="sidebar">
             <div class="brand">
-                <div class="brand-icon">
-                    <i class="fas fa-plus-circle"></i>
-                </div>
-                <div class="brand-text">
-                    <span class="brand-title">HospitalSys</span>
-                    <span class="brand-subtitle">Management System</span>
-                </div>
+                Hospital MS
+                <small>{{ role if role else "Portal" }}</small>
             </div>
 
             <ul class="sidebar-nav">
-                <li>
-                    <a href="{{ url_for('doctor_dashboard')}}"
-                        class="{% if request.endpoint == 'doctor-dashboard' or active_tab=='dashboard' %}active{% endif %}">
-                        <i class="fa-solid fa-house"></i>
-                        <span class="nav-text">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('patients') }}"
-                        class="{% if request.endpoint == 'patients' or active_tab=='patients' %}active{% endif %}">
-                        <i class="fa-solid fa-user-group"></i>
-                        <span class="nav-text">Patients</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('admitted_patients') }}"
-                        class="{% if request.endpoint == 'admissions' or active_tab=='admission'%}active{% endif %}">
-                        <i class="fa-solid fa-clipboard-list"></i>
-                        <span class="nav-text">Admissions</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('appointments') }}"
-                        class="{% if request.endpoint == 'appointments' %}active{% endif %}">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span class="nav-text">Appointments</span>
-                    </a>
-                </li>
-                {% if role != 'Doctor'%}
-                <li>
-                    <a href="{{ url_for('doctors') }}" class="{% if request.endpoint == 'doctors' %}active{% endif %}">
-                        <i class="fa-solid fa-user-doctor"></i>
-                        <span class="nav-text">Doctors</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="{% if request.endpoint == 'departments' %}active{% endif %}">
-                        <i class="fa-solid fa-building"></i>
-                        <span class="nav-text">Departments</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="{% if request.endpoint == 'billing' %}active{% endif %}">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span class="nav-text">Billing</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="{% if request.endpoint == 'reports' %}active{% endif %}">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span class="nav-text">Reports</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="{% if request.endpoint == 'settings' %}active{% endif %}">
-                        <i class="fa-solid fa-gear"></i>
-                        <span class="nav-text">Settings</span>
-                    </a>
-                </li>
+                {% if role == "Doctor" %}
+                    <li><a href="{{ url_for('doctor_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('appointments') }}">Appointments</a></li>
+                    <li><a href="{{ url_for('patients') }}">Patients</a></li>
+                    <li><a href="{{ url_for('admitted_patients') }}">Admissions</a></li>
+
+                {% elif role == "Admin" %}
+                    <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('add_patient_form') }}">Register Patient</a></li>
+                    <li><a href="{{ url_for('update_patient_form') }}">Manage Patients</a></li>
+                    <li><a href="{{ url_for('add_doctor_form') }}">Add Doctor</a></li>
+                    <li><a href="{{ url_for('update_doctor_form') }}">Manage Doctors</a></li>
+                    <li><a href="{{ url_for('add_nurse_form') }}">Add Nurse</a></li>
+                    <li><a href="{{ url_for('update_nurse_form') }}">Manage Nurses</a></li>
+                    <li><a href="{{ url_for('departments') }}">Departments</a></li>
+                    <li><a href="{{ url_for('staff_schedules') }}">Schedules</a></li>
+                    <li><a href="{{ url_for('beds') }}">Beds</a></li>
+
+                {% elif role == "Nurse" %}
+                    <li><a href="{{ url_for('nurse_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('patients') }}">Patients</a></li>
+
+                {% elif role == "Patient" %}
+                    <li><a href="{{ url_for('patient_dashboard') }}">Dashboard</a></li>
                 {% endif %}
+
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
-        </div>
+        </aside>
 
-        <div class="sidebar-bottom">
-            <div class="help-card">
-                <div class="help-icon">
-                    <i class="fa-solid fa-question"></i>
+        <main class="main">
+            <div class="topbar">
+                <div class="title">Hospital Management System</div>
+                <div class="user">
+                    {% if username %}
+                        Logged in as {{ username }} | {{ role }}
+                    {% endif %}
                 </div>
-                <div class="help-text">
-                    <h4>Need Help?</h4>
-                    <p>Contact support for assistance.</p>
-                </div>
-                <button class="help-btn">Contact Support</button>
-            </div>
-        </div>
-    </aside>
-
-    <div class="topbar" id="topbar">
-        <div class="topbar-left">
-            <div class="menu-toggle" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </div>
-            <span class="system-name">Appointments</span>
-        </div>
-
-        <div class="topbar-right">
-            <div class="topbar-icon">
-                <i class="far fa-bell"></i>
-                <span class="notif-badge">3</span>
             </div>
 
-            <div class="topbar-icon">
-                <i class="far fa-calendar"></i>
-            </div>
-
-            <div class="user-profile">
-                <img src="{{ url_for('static', filename='images/default-user.png') }}" alt="User" class="user-img">
-                <div class="user-info">
-                    <span class="user-name">{{username}}</span>
-                    <span class="user-role">{{role}}</span>
-                </div>
-                <i class="fas fa-chevron-down topbar-icon" style="font-size: 12px;"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="dashboard">
-        <main class="content" id="content">
-            <div class="content-inner">
+            <div class="content">
                 {% block content %}{% endblock %}
             </div>
         </main>
     </div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            const content = document.getElementById("content");
-            const topbar = document.getElementById("topbar");
-
-            sidebar.classList.toggle("collapsed");
-            content.classList.toggle("expanded");
-            topbar.classList.toggle("collapsed");
-        }
-    </script>
-
 </body>
-
 </html>

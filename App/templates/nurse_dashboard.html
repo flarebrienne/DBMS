@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-page">
+    <div class="page-header">
+        <h1>Nurse Dashboard</h1>
+        <p>Overview of nurse information and quick actions.</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Nurse Profile</div>
+        </div>
+        <div class="panel-body">
+            <div class="list-item">
+                <div class="item-title">ID</div>
+                <div class="item-right">{{ nurse.nurse_id }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Name</div>
+                <div class="item-right">{{ nurse.first_name }} {{ nurse.last_name }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Phone</div>
+                <div class="item-right">{{ nurse.phone }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Email</div>
+                <div class="item-right">{{ nurse.email }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Department</div>
+                <div class="item-right">{{ nurse.dept_name }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Quick Actions</div>
+        </div>
+        <div class="panel-body">
+            <div class="quick-links">
+                <a href="/update_nurse_form">Update Profile</a>
+                <a href="/patients">View Patients</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-page">
+    <div class="page-header">
+        <h1>Patient Dashboard</h1>
+        <p>Overview of patient information and quick actions.</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Patient Profile</div>
+        </div>
+        <div class="panel-body">
+            <div class="list-item">
+                <div class="item-title">ID</div>
+                <div class="item-right">{{ patient.patient_id }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Name</div>
+                <div class="item-right">{{ patient.first_name }} {{ patient.last_name }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Date of Birth</div>
+                <div class="item-right">{{ patient.dob }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Gender</div>
+                <div class="item-right">{{ patient.gender }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Address</div>
+                <div class="item-right">{{ patient.address }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Phone</div>
+                <div class="item-right">{{ patient.phone }}</div>
+            </div>
+            <div class="list-item">
+                <div class="item-title">Email</div>
+                <div class="item-right">{{ patient.email }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Quick Actions</div>
+        </div>
+        <div class="panel-body">
+            <div class="quick-links">
+                <a href="/patient/{{ patient.patient_id }}/appointments">Appointments</a>
+                <a href="/patient/{{ patient.patient_id }}/admissions">Admissions</a>
+                <a href="/patient/{{ patient.patient_id }}/medical-records">Medical Records</a>
+                <a href="/patient/{{ patient.patient_id }}/prescriptions">Prescriptions</a>
+                <a href="/patient/{{ patient.patient_id }}/lab-tests">Lab Tests</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
