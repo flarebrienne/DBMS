@@ -3,7 +3,7 @@
 {% block content %}
 
 <style>
-    .page-header {
+    .appointments-page .page-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -12,26 +12,26 @@
         flex-wrap: wrap;
     }
 
-    .page-title h1 {
+    .appointments-page .page-title h1 {
         font-size: 32px;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 4px;
     }
 
-    .page-title p {
+    .appointments-page .page-title p {
         font-size: 14px;
         color: #64748b;
     }
 
-    .header-actions {
+    .appointments-page .header-actions {
         display: flex;
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
     }
 
-    .date-box {
+    .appointments-page .date-box {
         height: 42px;
         min-width: 180px;
         border: 1px solid #dbe2ea;
@@ -43,7 +43,24 @@
         outline: none;
     }
 
-    .btn-primary {
+    .appointments-page .clear-date-btn {
+        height: 38px;
+        padding: 0 10px;
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        background: #fff;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .appointments-page .clear-date-btn:hover {
+        background: #f8fafc;
+        color: #334155;
+    }
+
+    .appointments-page .btn-primary {
         height: 42px;
         border: none;
         border-radius: 10px;
@@ -60,18 +77,18 @@
         box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
     }
 
-    .btn-primary:hover {
+    .appointments-page .btn-primary:hover {
         background: #1d4ed8;
     }
 
-    .stats-grid {
+    .appointments-page .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
         margin-bottom: 18px;
     }
 
-    .stat-card {
+    .appointments-page .stat-card {
         background: #fff;
         border: 1px solid #e8edf3;
         border-radius: 14px;
@@ -79,14 +96,14 @@
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
     }
 
-    .stat-top {
+    .appointments-page .stat-top {
         display: flex;
         align-items: center;
         gap: 10px;
         margin-bottom: 10px;
     }
 
-    .stat-icon {
+    .appointments-page .stat-icon {
         width: 42px;
         height: 42px;
         border-radius: 50%;
@@ -97,47 +114,47 @@
         flex-shrink: 0;
     }
 
-    .stat-icon.blue {
+    .appointments-page .stat-icon.blue {
         background: #e0ecff;
         color: #2563eb;
     }
 
-    .stat-icon.green {
+    .appointments-page .stat-icon.green {
         background: #def7e8;
         color: #16a34a;
     }
 
-    .stat-icon.yellow {
+    .appointments-page .stat-icon.yellow {
         background: #fff4d6;
         color: #d97706;
     }
 
-    .stat-icon.red {
+    .appointments-page .stat-icon.red {
         background: #ffe3e3;
         color: #ef4444;
     }
 
-    .stat-label {
+    .appointments-page .stat-label {
         font-size: 13px;
         font-weight: 600;
         color: #64748b;
         margin-bottom: 4px;
     }
 
-    .stat-number {
+    .appointments-page .stat-number {
         font-size: 28px;
         font-weight: 700;
         color: #1e293b;
         line-height: 1;
     }
 
-    .stat-subtext {
+    .appointments-page .stat-subtext {
         margin-top: 8px;
         font-size: 12px;
         color: #64748b;
     }
 
-    .table-card {
+    .appointments-page .table-card {
         background: #fff;
         border: 1px solid #e8edf3;
         border-radius: 14px;
@@ -145,7 +162,7 @@
         overflow: hidden;
     }
 
-    .table-toolbar {
+    .appointments-page .table-toolbar {
         padding: 14px 16px;
         border-bottom: 1px solid #edf2f7;
         display: flex;
@@ -155,24 +172,24 @@
         flex-wrap: wrap;
     }
 
-    .table-title {
+    .appointments-page .table-title {
         font-size: 22px;
         font-weight: 700;
         color: #1e293b;
     }
 
-    .toolbar-actions {
+    .appointments-page .toolbar-actions {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
         align-items: center;
     }
 
-    .search-box {
+    .appointments-page .search-box {
         position: relative;
     }
 
-    .search-box i {
+    .appointments-page .search-box i {
         position: absolute;
         left: 12px;
         top: 50%;
@@ -181,7 +198,7 @@
         font-size: 12px;
     }
 
-    .search-box input {
+    .appointments-page .search-box input {
         width: 220px;
         height: 38px;
         padding: 0 12px 0 34px;
@@ -192,7 +209,7 @@
         background: #fff;
     }
 
-    .filter-select {
+    .appointments-page .filter-select {
         height: 38px;
         padding: 0 12px;
         border: 1px solid #dbe2ea;
@@ -206,15 +223,7 @@
         min-width: 110px;
     }
 
-    .filter-select:hover {
-        border-color: #94a3b8;
-    }
-
-    .filter-select:focus {
-        border-color: #2563eb;
-    }
-
-    .toolbar-btn {
+    .appointments-page .toolbar-btn {
         height: 38px;
         padding: 0 12px;
         border: 1px solid #dbe2ea;
@@ -230,24 +239,24 @@
         text-decoration: none;
     }
 
-    .appointments-table-wrap {
+    .appointments-page .appointments-table-wrap {
         width: 100%;
         overflow-x: auto;
     }
 
-    table {
+    .appointments-page table {
         width: 100%;
         border-collapse: collapse;
         min-width: 1000px;
     }
 
-    thead {
+    .appointments-page thead {
         background: #f8fafc;
     }
 
-    th {
+    .appointments-page th {
         text-align: left;
-        padding: 12px 12px;
+        padding: 12px;
         font-size: 12px;
         color: #64748b;
         font-weight: 700;
@@ -255,25 +264,25 @@
         white-space: nowrap;
     }
 
-    td {
-        padding: 12px 12px;
+    .appointments-page td {
+        padding: 12px;
         font-size: 12px;
         color: #334155;
         border-bottom: 1px solid #edf2f7;
         vertical-align: middle;
     }
 
-    tbody tr:hover {
+    .appointments-page tbody tr:hover {
         background: #fafcff;
     }
 
-    .person-cell {
+    .appointments-page .person-cell {
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .avatar {
+    .appointments-page .avatar {
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -287,47 +296,42 @@
         flex-shrink: 0;
     }
 
-    .person-name {
+    .appointments-page .person-name {
         font-weight: 700;
         font-size: 12px;
         color: #1e293b;
         margin-bottom: 2px;
     }
 
-    .age-badge {
+    .appointments-page .age-badge,
+    .appointments-page .gender-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 40px;
         padding: 6px 10px;
         border-radius: 999px;
         font-size: 12px;
         font-weight: 700;
+    }
+
+    .appointments-page .age-badge {
         background: #eff6ff;
         color: #2563eb;
     }
 
-    .gender-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 62px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
+    .appointments-page .gender-badge {
         background: #f8fafc;
         color: #475569;
     }
 
-    .last-visit {
+    .appointments-page .last-visit {
         font-size: 12px;
         color: #475569;
         font-weight: 500;
         white-space: nowrap;
     }
 
-    .status-badge {
+    .appointments-page .status-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -338,28 +342,28 @@
         font-weight: 700;
     }
 
-    .status-badge.completed {
+    .appointments-page .status-badge.completed {
         background: #dcfce7;
         color: #15803d;
     }
 
-    .status-badge.pending {
+    .appointments-page .status-badge.pending {
         background: #fef3c7;
         color: #b45309;
     }
 
-    .status-badge.cancelled {
+    .appointments-page .status-badge.cancelled {
         background: #fee2e2;
         color: #b91c1c;
     }
 
-    .actions {
+    .appointments-page .actions {
         display: flex;
         align-items: center;
         gap: 6px;
     }
 
-    .action-btn {
+    .appointments-page .action-btn {
         width: 32px;
         height: 32px;
         border: 1px solid #dbe2ea;
@@ -374,11 +378,11 @@
         text-decoration: none;
     }
 
-    .action-btn:hover {
+    .appointments-page .action-btn:hover {
         background: #f8fafc;
     }
 
-    .table-footer {
+    .appointments-page .table-footer {
         padding: 14px 16px;
         display: flex;
         justify-content: space-between;
@@ -387,18 +391,18 @@
         flex-wrap: wrap;
     }
 
-    .footer-text {
+    .appointments-page .footer-text {
         font-size: 12px;
         color: #64748b;
     }
 
-    .pagination {
+    .appointments-page .pagination {
         display: flex;
         align-items: center;
         gap: 6px;
     }
 
-    .page-btn {
+    .appointments-page .page-btn {
         min-width: 32px;
         height: 32px;
         border: 1px solid #dbe2ea;
@@ -414,252 +418,268 @@
         text-decoration: none;
     }
 
-    .page-btn.active {
+    .appointments-page .page-btn.active {
         background: #2563eb;
         color: #fff;
         border-color: #2563eb;
     }
 
-    .empty-row td {
+    .appointments-page .empty-row td {
         padding: 24px;
         text-align: center;
         color: #64748b;
     }
 
     @media (max-width: 1200px) {
-        .stats-grid {
+        .appointments-page .stats-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
     @media (max-width: 768px) {
-        .stats-grid {
+        .appointments-page .stats-grid {
             grid-template-columns: 1fr;
         }
 
-        .page-title h1 {
+        .appointments-page .page-title h1 {
             font-size: 26px;
         }
 
-        .search-box input {
+        .appointments-page .search-box input {
             width: 180px;
         }
 
-        .table-title {
+        .appointments-page .table-title {
             font-size: 20px;
         }
     }
 </style>
 
-<div class="page-header">
-    <div class="page-title">
-        <h1>Appointments</h1>
-        <p>View and manage appointments for the selected date.</p>
-    </div>
+<div class="appointments-page">
 
-    <div class="header-actions">
-        <a href="#" class="btn-primary">
-            <i class="fas fa-plus"></i>
-            New Appointment
-        </a>
-    </div>
-</div>
-
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon blue">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div>
-                <div class="stat-label">Total Appointments</div>
-                <div class="stat-number">{{ total_appointments }}</div>
-            </div>
+    <div class="page-header">
+        <div class="page-title">
+            <h1>Appointments</h1>
+            <p>View and manage appointments for the selected date.</p>
         </div>
-        <div class="stat-subtext">All scheduled for this date</div>
-    </div>
 
-    <div class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon green">
-                <i class="fas fa-circle-check"></i>
-            </div>
-            <div>
-                <div class="stat-label">Completed</div>
-                <div class="stat-number">{{ completed_appointments }}</div>
-            </div>
-        </div>
-        <div class="stat-subtext">Finished appointments</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon yellow">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
-                <div class="stat-label">Pending</div>
-                <div class="stat-number">{{ pending_appointments }}</div>
-            </div>
-        </div>
-        <div class="stat-subtext">Waiting to be completed</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-top">
-            <div class="stat-icon red">
-                <i class="fas fa-circle-xmark"></i>
-            </div>
-            <div>
-                <div class="stat-label">Cancelled</div>
-                <div class="stat-number">{{ cancelled_appointments }}</div>
-            </div>
-        </div>
-        <div class="stat-subtext">Not attended or cancelled</div>
-    </div>
-</div>
-
-<div class="table-card">
-    <div class="table-toolbar">
-        <div class="table-title">Appointments List</div>
-
-        <form method="GET" action="{{ url_for('appointments') }}" class="toolbar-actions">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" name="search" value="{{ current_search }}" placeholder="Search patient...">
-            </div>
-
-            <select class="filter-select" name="gender">
-                <option value="">Gender</option>
-                <option value="M" {% if current_gender=="M" %}selected{% endif %}>Male</option>
-                <option value="F" {% if current_gender=="F" %}selected{% endif %}>Female</option>
-            </select>
-
-            <select class="filter-select" name="status">
-                <option value="">Status</option>
-                <option value="Completed" {% if current_status=="Completed" %}selected{% endif %}>Completed</option>
-                <option value="Pending" {% if current_status=="Pending" %}selected{% endif %}>Pending</option>
-                <option value="Cancelled" {% if current_status=="Cancelled" %}selected{% endif %}>Cancelled</option>
-            </select>
-
-            <input type="date" class="date-box" name="date" value="{{ selected_date }}">
-
-            <button class="toolbar-btn" type="submit">
-                <i class="fas fa-filter"></i>
-                Apply
-            </button>
-
-            <a class="toolbar-btn" href="{{ url_for('appointments') }}">
-                <i class="fas fa-rotate-left"></i>
-                Reset
+        <div class="header-actions">
+            <a href="#" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                New Appointment
             </a>
-        </form>
+        </div>
     </div>
 
-    <div class="appointments-table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Patient</th>
-                    <th>Gender</th>
-                    <th>Age</th>
-                    <th>Time</th>
-                    <th>Last Visited</th>
-                    <th>Status</th>
-                    <th>Contact</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon blue">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Appointments</div>
+                    <div class="stat-number">{{ total_appointments }}</div>
+                </div>
+            </div>
+            <div class="stat-subtext">All scheduled for this date</div>
+        </div>
 
-            <tbody>
-                {% if appointments %}
-                {% for appt in appointments %}
-                <tr>
-                    <td>{{ loop.index + ((current_page - 1) * per_page) }}</td>
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon green">
+                    <i class="fas fa-circle-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Completed</div>
+                    <div class="stat-number">{{ completed_appointments }}</div>
+                </div>
+            </div>
+            <div class="stat-subtext">Finished appointments</div>
+        </div>
 
-                    <td>
-                        <div class="person-cell">
-                            <div class="avatar">
-                                AJ
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon yellow">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-number">{{ pending_appointments }}</div>
+                </div>
+            </div>
+            <div class="stat-subtext">Waiting to be completed</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon red">
+                    <i class="fas fa-circle-xmark"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Cancelled</div>
+                    <div class="stat-number">{{ cancelled_appointments }}</div>
+                </div>
+            </div>
+            <div class="stat-subtext">Not attended or cancelled</div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="table-title">Appointments List</div>
+
+            <form method="GET" action="{{ url_for('appointments') }}" class="toolbar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="{{ current_search }}" placeholder="Search patient...">
+                </div>
+
+                <select class="filter-select" name="gender">
+                    <option value="">Gender</option>
+                    <option value="M" {% if current_gender=="M" %}selected{% endif %}>Male</option>
+                    <option value="F" {% if current_gender=="F" %}selected{% endif %}>Female</option>
+                </select>
+
+                <select class="filter-select" name="status">
+                    <option value="">Status</option>
+                    <option value="Completed" {% if current_status=="Completed" %}selected{% endif %}>Completed</option>
+                    <option value="Pending" {% if current_status=="Pending" %}selected{% endif %}>Pending</option>
+                    <option value="Cancelled" {% if current_status=="Cancelled" %}selected{% endif %}>Cancelled</option>
+                </select>
+
+                <input id="appointmentDateFilter" type="date" class="date-box" name="date" value="{{ selected_date }}">
+
+                <button class="clear-date-btn" type="button" onclick="clearAppointmentDate()">
+                    Clear Date
+                </button>
+
+                <button class="toolbar-btn" type="submit">
+                    <i class="fas fa-filter"></i>
+                    Apply
+                </button>
+
+                <a class="toolbar-btn" href="{{ url_for('appointments') }}">
+                    <i class="fas fa-rotate-left"></i>
+                    Reset
+                </a>
+            </form>
+        </div>
+
+        <div class="appointments-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Patient</th>
+                        <th>Gender</th>
+                        <th>Age</th>
+                        <th>Time</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if appointments %}
+                    {% for appt in appointments %}
+                    <tr>
+                        <td>{{ loop.index + ((current_page - 1) * per_page) }}</td>
+
+                        <td>
+                            <div class="person-cell">
+                                <div class="avatar">
+                                    AJ
+                                </div>
+                                <div>
+                                    <div class="person-name">{{ appt.first_name }} {{ appt.last_name }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="person-name">{{ appt.first_name }} {{ appt.last_name }}</div>
+                        </td>
+
+                        <td>
+                            <span class="gender-badge">{{ appt.gender }}</span>
+                        </td>
+
+                        <td>
+                            <span class="age-badge">{{ appt.age }}</span>
+                        </td>
+
+                        <td>{{ appt.time }}</td>
+
+                        <td class="Date">{{ appt.date }}</td>
+
+                        <td>
+                            <span class="status-badge {{ appt.status|lower }}">
+                                {{ appt.status }}
+                            </span>
+                        </td>
+
+                        <td>{{ appt.phone }}</td>
+
+                        <td>
+                            <div class="actions">
+                                <a href="{{url_for('patient_appointments', patient_id=appt.patient_id)}}"
+                                    class="action-btn" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{url_for('patient_prescriptions', patient_id=appt.patient_id)}}"
+                                    class="action-btn" title="Edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="#" class="action-btn" title="More">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
                             </div>
-                        </div>
-                    </td>
-
-                    <td>
-                        <span class="gender-badge">{{ appt.gender }}</span>
-                    </td>
-
-                    <td>
-                        <span class="age-badge">{{ appt.dob }}</span>
-                    </td>
-
-                    <td>{{ appt.time }}</td>
-
-                    <td class="last-visit">{{ appt.gender }}</td>
-
-                    <td>
-                        <span class="status-badge {{ appt.status|lower }}">
-                            {{ appt.status }}
-                        </span>
-                    </td>
-
-                    <td>{{ appt.phone }}</td>
-
-                    <td>
-                        <div class="actions">
-                            <a href="#" class="action-btn" title="View">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="#" class="action-btn" title="Edit">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <a href="#" class="action-btn" title="More">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% else %}
-                <tr class="empty-row">
-                    <td colspan="9">No appointments found for this day.</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="table-footer">
-        <div class="footer-text">
-            Showing {{ start_row }} to {{ end_row }} of {{ total_rows }} appointments
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr class="empty-row">
+                        <td colspan="9">No appointments found for this day.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
 
-        <div class="pagination">
-            {% if current_page > 1 %}
-            <a class="page-btn"
-                href="{{ url_for('appointments', page=current_page-1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-            {% endif %}
+        <div class="table-footer">
+            <div class="footer-text">
+                Showing {{ start_row }} to {{ end_row }} of {{ total_rows }} appointments
+            </div>
 
-            {% for p in range(1, total_pages + 1) %}
-            <a class="page-btn {% if p == current_page %}active{% endif %}"
-                href="{{ url_for('appointments', page=p, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
-                {{ p }}
-            </a>
-            {% endfor %}
-
-            {% if current_page < total_pages %} <a class="page-btn"
-                href="{{ url_for('appointments', page=current_page+1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
-                <i class="fas fa-chevron-right"></i>
+            <div class="pagination">
+                {% if current_page > 1 %}
+                <a class="page-btn"
+                    href="{{ url_for('appointments', page=current_page-1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                    <i class="fas fa-chevron-left"></i>
                 </a>
                 {% endif %}
+
+                {% for p in range(1, total_pages + 1) %}
+                <a class="page-btn {% if p == current_page %}active{% endif %}"
+                    href="{{ url_for('appointments', page=p, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                    {{ p }}
+                </a>
+                {% endfor %}
+
+                {% if current_page < total_pages %} <a class="page-btn"
+                    href="{{ url_for('appointments', page=current_page+1, date=selected_date, search=current_search, gender=current_gender, status=current_status) }}">
+                    <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% endif %}
+            </div>
         </div>
     </div>
+
 </div>
+
+<script>
+    function clearAppointmentDate() {
+        document.getElementById("appointmentDateFilter").value = "";
+    }
+</script>
 
 {% endblock %}

@@ -9,7 +9,7 @@
         gap: 18px;
     }
 
-    .page-header {
+    .dashboard-page .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -17,40 +17,44 @@
         flex-wrap: wrap;
     }
 
-    .page-title h1 {
+    .dashboard-page .page-title h1 {
         font-size: 30px;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 4px;
     }
 
-    .page-title p {
+    .dashboard-page .page-title p {
         font-size: 14px;
         color: #64748b;
     }
 
-    .stats-grid {
+    .dashboard-page .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
     }
 
-    .stat-card {
+    .dashboard-page .stat-card,
+    .dashboard-page .panel {
         background: #fff;
         border: 1px solid #e8edf3;
         border-radius: 14px;
-        padding: 16px;
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
     }
 
-    .stat-top {
+    .dashboard-page .stat-card {
+        padding: 16px;
+    }
+
+    .dashboard-page .stat-top {
         display: flex;
         align-items: center;
         gap: 12px;
         margin-bottom: 10px;
     }
 
-    .stat-icon {
+    .dashboard-page .stat-icon {
         width: 44px;
         height: 44px;
         border-radius: 50%;
@@ -61,33 +65,33 @@
         flex-shrink: 0;
     }
 
-    .icon-blue {
+    .dashboard-page .icon-blue {
         background: #dbeafe;
         color: #2563eb;
     }
 
-    .icon-green {
+    .dashboard-page .icon-green {
         background: #dcfce7;
         color: #16a34a;
     }
 
-    .icon-purple {
+    .dashboard-page .icon-purple {
         background: #ede9fe;
         color: #7c3aed;
     }
 
-    .icon-yellow {
+    .dashboard-page .icon-yellow {
         background: #fef3c7;
         color: #d97706;
     }
 
-    .stat-label {
+    .dashboard-page .stat-label {
         font-size: 13px;
         color: #64748b;
         font-weight: 600;
     }
 
-    .stat-number {
+    .dashboard-page .stat-number {
         font-size: 30px;
         font-weight: 700;
         color: #1e293b;
@@ -95,28 +99,30 @@
         margin-top: 4px;
     }
 
-    .stat-link {
+    .dashboard-page .stat-link {
         margin-top: 10px;
         font-size: 13px;
         color: #2563eb;
         font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
     }
 
-    .row-grid {
+    .dashboard-page .stat-link:hover {
+        text-decoration: underline;
+    }
+
+    .dashboard-page .row-grid {
         display: grid;
         grid-template-columns: 1.3fr 1fr 1fr;
         gap: 14px;
     }
 
-    .panel {
-        background: #fff;
-        border: 1px solid #e8edf3;
-        border-radius: 14px;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    .dashboard-page .panel {
         overflow: hidden;
     }
 
-    .panel-header {
+    .dashboard-page .panel-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -124,24 +130,24 @@
         border-bottom: 1px solid #edf2f7;
     }
 
-    .panel-title {
+    .dashboard-page .panel-title {
         font-size: 18px;
         font-weight: 700;
         color: #1e293b;
     }
 
-    .panel-link {
+    .dashboard-page .panel-link {
         font-size: 13px;
         color: #2563eb;
         text-decoration: none;
         font-weight: 600;
     }
 
-    .panel-body {
+    .dashboard-page .panel-body {
         padding: 10px 16px 16px;
     }
 
-    .list-item {
+    .dashboard-page .list-item {
         display: grid;
         grid-template-columns: auto 1fr auto;
         gap: 12px;
@@ -150,11 +156,11 @@
         border-bottom: 1px solid #edf2f7;
     }
 
-    .list-item:last-child {
+    .dashboard-page .list-item:last-child {
         border-bottom: none;
     }
 
-    .avatar {
+    .dashboard-page .avatar {
         width: 36px;
         height: 36px;
         border-radius: 50%;
@@ -168,26 +174,26 @@
         flex-shrink: 0;
     }
 
-    .item-title {
+    .dashboard-page .item-title {
         font-size: 13px;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 3px;
     }
 
-    .item-subtitle {
+    .dashboard-page .item-subtitle {
         font-size: 12px;
         color: #64748b;
     }
 
-    .item-right {
+    .dashboard-page .item-right {
         font-size: 12px;
         color: #64748b;
         white-space: nowrap;
         text-align: right;
     }
 
-    .status-pill {
+    .dashboard-page .status-pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -198,29 +204,29 @@
         font-weight: 700;
     }
 
-    .status-confirmed,
-    .status-completed {
+    .dashboard-page .status-confirmed,
+    .dashboard-page .status-completed {
         background: #dcfce7;
         color: #15803d;
     }
 
-    .status-pending {
+    .dashboard-page .status-pending {
         background: #fef3c7;
         color: #b45309;
     }
 
-    .status-cancelled {
+    .dashboard-page .status-cancelled {
         background: #fee2e2;
         color: #b91c1c;
     }
 
-    .actions-grid {
+    .dashboard-page .actions-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 14px;
     }
 
-    .action-card {
+    .dashboard-page .action-card {
         background: #fff;
         border: 1px solid #e8edf3;
         border-radius: 14px;
@@ -232,12 +238,12 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .action-card:hover {
+    .dashboard-page .action-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
     }
 
-    .action-icon {
+    .dashboard-page .action-icon {
         width: 48px;
         height: 48px;
         margin: 0 auto 10px;
@@ -250,42 +256,42 @@
         font-size: 20px;
     }
 
-    .action-label {
+    .dashboard-page .action-label {
         font-size: 13px;
         font-weight: 700;
         color: #1e293b;
     }
 
-    .empty-state {
+    .dashboard-page .empty-state {
         color: #64748b;
         font-size: 13px;
         padding: 12px 0;
     }
 
     @media (max-width: 1200px) {
-        .stats-grid {
+        .dashboard-page .stats-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .row-grid {
+        .dashboard-page .row-grid {
             grid-template-columns: 1fr;
         }
 
-        .actions-grid {
+        .dashboard-page .actions-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
     @media (max-width: 768px) {
-        .stats-grid {
+        .dashboard-page .stats-grid {
             grid-template-columns: 1fr;
         }
 
-        .actions-grid {
+        .dashboard-page .actions-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .page-title h1 {
+        .dashboard-page .page-title h1 {
             font-size: 24px;
         }
     }
@@ -310,7 +316,7 @@
                     <div class="stat-number">{{ stats.today_appointments }}</div>
                 </div>
             </div>
-            <div class="stat-link">View appointments →</div>
+            <a class="stat-link" href="{{ url_for('appointments') }}">View appointments →</a>
         </div>
 
         <div class="stat-card">
@@ -323,7 +329,7 @@
                     <div class="stat-number">{{ stats.total_patients }}</div>
                 </div>
             </div>
-            <div class="stat-link">View patients →</div>
+            <a class="stat-link" href="{{ url_for('patients') }}">View patients →</a>
         </div>
 
         <div class="stat-card">
@@ -357,7 +363,7 @@
         <div class="panel">
             <div class="panel-header">
                 <div class="panel-title">Recent Patients</div>
-                <a href="#" class="panel-link">View all →</a>
+                <a href="{{ url_for('patients') }}" class="panel-link">View all →</a>
             </div>
             <div class="panel-body">
                 {% if recent_patients %}
@@ -369,8 +375,7 @@
                     <div>
                         <div class="item-title">{{ patient.first_name }} {{ patient.last_name }}</div>
                         <div class="item-subtitle">
-                            {{ patient.gender }}, {{ patient.age }} • Phone: {{ patient.phone
-                            }}
+                            {{ patient.gender }}, {{ patient.age }} • Phone: {{ patient.phone }}
                         </div>
                     </div>
                     <div class="item-right">PID: {{ patient.patient_id }}</div>
@@ -385,7 +390,7 @@
         <div class="panel">
             <div class="panel-header">
                 <div class="panel-title">Recent Prescriptions</div>
-                <a href="#" class="panel-link">View all →</a>
+                <a href="{{ url_for('patients') }}" class="panel-link">View all →</a>
             </div>
             <div class="panel-body">
                 {% if recent_prescriptions %}
@@ -410,7 +415,7 @@
         <div class="panel">
             <div class="panel-header">
                 <div class="panel-title">Today's Schedule</div>
-                <a href="#" class="panel-link">View full schedule →</a>
+                <a href="{{ url_for('patients') }}" class="panel-link">View full schedule →</a>
             </div>
             <div class="panel-body">
                 {% if today_schedule %}
@@ -441,35 +446,35 @@
         </div>
         <div class="panel-body">
             <div class="actions-grid">
-                <a href="#" class="action-card">
+                <a href="{{ url_for('appointments') }}" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-calendar-plus"></i>
                     </div>
                     <div class="action-label">New Appointment</div>
                 </a>
 
-                <a href="#" class="action-card">
+                <a href="{{ url_for('add_patient_form') }}" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
                     <div class="action-label">Add Patient</div>
                 </a>
 
-                <a href="#" class="action-card">
+                <a href="{{ url_for('patients') }}" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-prescription"></i>
                     </div>
                     <div class="action-label">Write Prescription</div>
                 </a>
 
-                <a href="#" class="action-card">
+                <a href="{{ url_for('patients') }}" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-vial"></i>
                     </div>
                     <div class="action-label">Order Lab Test</div>
                 </a>
 
-                <a href="#" class="action-card">
+                <a href="{{ url_for('patients') }}" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-notes-medical"></i>
                     </div>

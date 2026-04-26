@@ -202,13 +202,9 @@
         <div class="modal-body">
             <form method="POST" action="{{ url_for('create_prescription', patient_id=patient.patient_id) }}">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label for="doctor_id">Doctor ID</label>
-                        <input type="number" id="doctor_id" name="doctor_id" required>
-                    </div>
 
                     <div class="form-group">
-                        <label for="dosage_instruction">Dosage Instruction</label>
+                        <label for="dosage_instruction">Medication + Instructions</label>
                         <textarea id="dosage_instruction" name="dosage_instruction" required></textarea>
                     </div>
 

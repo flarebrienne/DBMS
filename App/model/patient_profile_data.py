@@ -105,7 +105,7 @@ def lab_test_data(db, conn, patient_id):
         FROM laboratory_test l
         JOIN doctor d ON d.doctor_id = l.doctor_id
         WHERE l.patient_id = %s
-          AND l.status = 0 AND results != NULL
+          AND l.status = 0 AND results IS NOT NULL
         ORDER BY l.ordered_datetime DESC
     """, (patient_id,))
     unreviewed = cursor.fetchall()
@@ -137,7 +137,7 @@ def lab_test_data(db, conn, patient_id):
         FROM laboratory_test l
         JOIN doctor d ON d.doctor_id = l.doctor_id
         WHERE l.patient_id = %s
-          AND l.status = 0 AND results=NULL
+          AND (l.results IS NULL OR l.results = '')
         ORDER BY l.ordered_datetime DESC
     """, (patient_id,))
     pending_lab_tests = cursor.fetchall()

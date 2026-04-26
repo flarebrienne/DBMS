@@ -34,7 +34,8 @@
         padding: 4px 0;
     }
 
-    .result-btn {
+    .result-btn,
+    .add-test-btn {
         border: none;
         background: #eff6ff;
         color: #2563eb;
@@ -48,8 +49,18 @@
         gap: 6px;
     }
 
-    .result-btn:hover {
+    .result-btn:hover,
+    .add-test-btn:hover {
         background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .add-test-btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        justify-content: center;
+        font-size: 16px;
     }
 
     .result-modal {
@@ -107,18 +118,24 @@
         margin-bottom: 6px;
     }
 
+    .result-input,
     .result-modal-body textarea {
         width: 100%;
-        min-height: 120px;
         border: 1px solid #dbe2ea;
         border-radius: 12px;
         padding: 10px 12px;
         font-size: 13px;
         outline: none;
-        resize: vertical;
         box-sizing: border-box;
+        margin-bottom: 14px;
     }
 
+    .result-modal-body textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .result-input:focus,
     .result-modal-body textarea:focus {
         border-color: #2563eb;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
@@ -164,6 +181,10 @@
 <div class="panel">
     <div class="panel-header">
         Pending Lab Tests ({{ pending_lab_tests|length }})
+
+        <button type="button" class="add-test-btn" onclick="openRequestModal()" title="Request Lab Test">
+            <i class="fas fa-plus-circle"></i>
+        </button>
     </div>
 
     <div class="panel-body">
@@ -307,6 +328,27 @@
     </div>
 </div>
 
+<div id="requestModal" class="result-modal">
+    <div class="result-modal-content">
+        <div class="result-modal-header">
+            <h3>Request Lab Test</h3>
+            <p>Create a pending lab test request for {{ patient.first_name }} {{ patient.last_name }}.</p>
+        </div>
+
+        <div class="result-modal-body">
+            <form method="POST" action="{{ url_for('add_lab_test_request', patient_id=patient.patient_id) }}">
+                <label>Test Name</label>
+                <input class="result-input" type="text" name="test_name" required placeholder="Example: Blood Test">
+
+                <div class="result-modal-actions">
+                    <button type="button" class="result-cancel-btn" onclick="closeRequestModal()">Cancel</button>
+                    <button type="submit" class="result-submit-btn">Request Test</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     function openResultModal(testId, testName) {
         const modal = document.getElementById("resultModal");
@@ -323,11 +365,24 @@
         document.getElementById("resultModal").classList.remove("show");
     }
 
-    window.addEventListener("click", function (event) {
-        const modal = document.getElementById("resultModal");
+    function openRequestModal() {
+        document.getElementById("requestModal").classList.add("show");
+    }
 
-        if (event.target === modal) {
+    function closeRequestModal() {
+        document.getElementById("requestModal").classList.remove("show");
+    }
+
+    window.addEventListener("click", function (event) {
+        const resultModal = document.getElementById("resultModal");
+        const requestModal = document.getElementById("requestModal");
+
+        if (event.target === resultModal) {
             closeResultModal();
+        }
+
+        if (event.target === requestModal) {
+            closeRequestModal();
         }
     });
 </script>
