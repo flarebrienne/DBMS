@@ -1,45 +1,172 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="dashboard-page">
-    <div class="page-header">
+<style>
+    /* Nurse dashboard styles scoped to this page only */
+    .nurse-dashboard-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    .nurse-dashboard-page .nurse-page-header {
+        background: #ffffff;
+        padding: 24px 28px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        border-left: 5px solid #2563eb;
+    }
+
+    .nurse-dashboard-page .nurse-page-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        color: #1f2937;
+    }
+
+    .nurse-dashboard-page .nurse-page-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 15px;
+    }
+
+    .nurse-dashboard-page .nurse-panel {
+        background: #ffffff;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .nurse-dashboard-page .nurse-panel-header {
+        padding: 18px 24px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nurse-dashboard-page .nurse-panel-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .nurse-dashboard-page .nurse-panel-body {
+        padding: 8px 24px;
+    }
+
+    .nurse-dashboard-page .nurse-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nurse-dashboard-page .nurse-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .nurse-dashboard-page .nurse-item-title {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .nurse-dashboard-page .nurse-item-right {
+        color: #4b5563;
+        text-align: right;
+    }
+
+    .nurse-dashboard-page .nurse-quick-links {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 18px 0;
+    }
+
+    .nurse-dashboard-page .nurse-quick-links a {
+        display: inline-block;
+        padding: 11px 18px;
+        background: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nurse-dashboard-page .nurse-quick-links a:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+        .nurse-dashboard-page {
+            padding: 20px 12px;
+        }
+
+        .nurse-dashboard-page .nurse-list-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nurse-dashboard-page .nurse-item-right {
+            text-align: left;
+        }
+
+        .nurse-dashboard-page .nurse-quick-links a {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="nurse-dashboard-page">
+    <div class="nurse-page-header">
         <h1>Nurse Dashboard</h1>
         <p>Overview of nurse information and quick actions.</p>
     </div>
 
-    <div class="panel">
-        <div class="panel-header">
-            <div class="panel-title">Nurse Profile</div>
+    <div class="nurse-panel">
+        <div class="nurse-panel-header">
+            <div class="nurse-panel-title">Nurse Profile</div>
         </div>
-        <div class="panel-body">
-            <div class="list-item">
-                <div class="item-title">ID</div>
-                <div class="item-right">{{ nurse.nurse_id }}</div>
+
+        <div class="nurse-panel-body">
+            <div class="nurse-list-item">
+                <div class="nurse-item-title">ID</div>
+                <div class="nurse-item-right">{{ nurse.nurse_id }}</div>
             </div>
-            <div class="list-item">
-                <div class="item-title">Name</div>
-                <div class="item-right">{{ nurse.first_name }} {{ nurse.last_name }}</div>
+
+            <div class="nurse-list-item">
+                <div class="nurse-item-title">Name</div>
+                <div class="nurse-item-right">{{ nurse.first_name }} {{ nurse.last_name }}</div>
             </div>
-            <div class="list-item">
-                <div class="item-title">Phone</div>
-                <div class="item-right">{{ nurse.phone }}</div>
+
+            <div class="nurse-list-item">
+                <div class="nurse-item-title">Phone</div>
+                <div class="nurse-item-right">{{ nurse.phone }}</div>
             </div>
-            <div class="list-item">
-                <div class="item-title">Email</div>
-                <div class="item-right">{{ nurse.email }}</div>
+
+            <div class="nurse-list-item">
+                <div class="nurse-item-title">Email</div>
+                <div class="nurse-item-right">{{ nurse.email }}</div>
             </div>
-            <div class="list-item">
-                <div class="item-title">Department</div>
-                <div class="item-right">{{ nurse.dept_name }}</div>
+
+            <div class="nurse-list-item">
+                <div class="nurse-item-title">Department</div>
+                <div class="nurse-item-right">{{ nurse.dept_name }}</div>
             </div>
         </div>
     </div>
 
-    <div class="panel">
-        <div class="panel-header">
-            <div class="panel-title">Quick Actions</div>
+    <div class="nurse-panel">
+        <div class="nurse-panel-header">
+            <div class="nurse-panel-title">Quick Actions</div>
         </div>
-        <div class="panel-body">
-            <div class="quick-links">
+
+        <div class="nurse-panel-body">
+            <div class="nurse-quick-links">
                 <a href="/update_nurse_form">Update Profile</a>
                 <a href="/patients">View Patients</a>
             </div>
