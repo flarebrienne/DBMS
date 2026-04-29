@@ -1,40 +1,183 @@
 {% extends "base.html" %}
+
 {% block content %}
+<style>
+    .dashboard-page {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .dashboard-page .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-page .page-header h1 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .dashboard-page .page-header p {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .dashboard-page .panel {
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+    }
+
+    .dashboard-page .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .dashboard-page .panel-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .dashboard-page .panel-body {
+        padding: 12px 16px 16px;
+    }
+
+    .dashboard-page .list-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .dashboard-page .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .dashboard-page .item-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .dashboard-page .item-right {
+        font-size: 13px;
+        color: #64748b;
+        text-align: right;
+        max-width: 60%;
+        word-break: break-word;
+    }
+
+    .dashboard-page .quick-links {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+    }
+
+    .dashboard-page .quick-links a {
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+        text-decoration: none;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dashboard-page .quick-links a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+        color: #2563eb;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-page .quick-links {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .dashboard-page .page-header h1 {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .dashboard-page .quick-links {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-page .list-item {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-page .item-right {
+            text-align: left;
+            max-width: 100%;
+        }
+    }
+</style>
+
 <div class="dashboard-page">
     <div class="page-header">
-        <h1>Patient Dashboard</h1>
-        <p>Overview of patient information and quick actions.</p>
+        <div>
+            <h1>Patient Dashboard</h1>
+            <p>Overview of patient information and quick actions.</p>
+        </div>
     </div>
 
     <div class="panel">
         <div class="panel-header">
             <div class="panel-title">Patient Profile</div>
         </div>
+
         <div class="panel-body">
             <div class="list-item">
                 <div class="item-title">ID</div>
                 <div class="item-right">{{ patient.patient_id }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Name</div>
                 <div class="item-right">{{ patient.first_name }} {{ patient.last_name }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Date of Birth</div>
                 <div class="item-right">{{ patient.dob }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Gender</div>
                 <div class="item-right">{{ patient.gender }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Address</div>
                 <div class="item-right">{{ patient.address }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Phone</div>
                 <div class="item-right">{{ patient.phone }}</div>
             </div>
+
             <div class="list-item">
                 <div class="item-title">Email</div>
                 <div class="item-right">{{ patient.email }}</div>
@@ -46,6 +189,7 @@
         <div class="panel-header">
             <div class="panel-title">Quick Actions</div>
         </div>
+
         <div class="panel-body">
             <div class="quick-links">
                 <a href="/patient/{{ patient.patient_id }}/appointments">Appointments</a>
@@ -57,4 +201,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
