@@ -7,10 +7,10 @@ def appointment_data(db, conn, patient_id, doctor_id):
     a.reason,
     a.status
     FROM appointment a
-    LEFT JOIN doctor d ON d.doctor_id = a.doctor_id
+    JOIN doctor d ON d.doctor_id = a.doctor_id
     WHERE a.patient_id = {patient_id} 
         AND a.doctor_id = {doctor_id}
-        AND a.ap_datetime >= NOW()
+        AND DATE(a.ap_datetime) >= CURDATE()
     ORDER BY a.ap_datetime ASC;""")
 
     upcoming_appointments = cursor.fetchall();
@@ -22,10 +22,10 @@ def appointment_data(db, conn, patient_id, doctor_id):
     a.reason,
     a.status
     FROM appointment a
-    LEFT JOIN doctor d ON d.doctor_id = a.doctor_id
+    JOIN doctor d ON d.doctor_id = a.doctor_id
     WHERE a.patient_id = {patient_id} 
         AND a.doctor_id = {doctor_id}
-        AND a.ap_datetime < NOW()
+        AND DATE(a.ap_datetime) < CURDATE()
     ORDER BY a.ap_datetime ASC;""")
 
     past_appointments = cursor.fetchall();

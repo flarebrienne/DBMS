@@ -277,12 +277,6 @@
     </div>
 
     <div class="patient-tabs">
-        <a href="#" class="patient-tabs__link {% if active_tab == 'overview' %}active{% endif %}">
-            <span class="patient-tabs__icon patient-tabs__icon--overview">
-                <i class="fas fa-user"></i>
-            </span>
-            Overview
-        </a>
 
         <a href="{{ url_for('patient_appointments', patient_id=patient.patient_id) }}"
             class="patient-tabs__link {% if active_tab == 'appointments' %}active{% endif %}">
@@ -322,14 +316,6 @@
                 <i class="fas fa-vial"></i>
             </span>
             Lab Tests
-        </a>
-
-        <a href="{{ url_for('patient_notes', patient_id=patient.patient_id) }}"
-            class="patient-tabs__link {% if active_tab == 'notes' %}active{% endif %}">
-            <span class="patient-tabs__icon patient-tabs__icon--notes">
-                <i class="fas fa-sticky-note"></i>
-            </span>
-            Notes
         </a>
 
         <a href="{{ url_for('patient_billing', patient_id=patient.patient_id) }}"

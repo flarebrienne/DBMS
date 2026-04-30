@@ -82,14 +82,14 @@ def medical_record(db, conn, patient_id):
     cursor.close()
     return admission
 
-def medical_record(db, conn, patient_id):
-    cursor = conn.cursor(db.cursors.DictCursor)
-    cursor.execute("""
-        SELECT date_time, note_type, concat(first_name, ' ', last_name ) as nurse_name, note_text FROM medical_record_notes AS a join nurse AS n ON a.nurse_id=n.nurse_id WHERE patient_id= %s
-    """, (patient_id,))
-    admission = cursor.fetchall()
-    cursor.close()
-    return admission
+# def medical_record(db, conn, patient_id):
+#     cursor = conn.cursor(db.cursors.DictCursor)
+#     cursor.execute("""
+#         SELECT date_time, note_type, concat(first_name, ' ', last_name ) as nurse_name, note_text FROM medical_record_notes AS a join nurse AS n ON a.nurse_id=n.nurse_id WHERE patient_id= %s
+#     """, (patient_id,))
+#     admission = cursor.fetchall()
+#     cursor.close()
+#     return admission
 
 def lab_test_data(db, conn, patient_id):
     cursor = conn.cursor(db.cursors.DictCursor)

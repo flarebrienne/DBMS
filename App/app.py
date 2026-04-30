@@ -359,7 +359,7 @@ def patients():
         SELECT COUNT(*) AS upcoming_appointments
         FROM appointment
         WHERE doctor_id = %s
-        AND ap_datetime >= NOW() AND status='Pending'
+        AND DATE(ap_datetime) >= CURDATE() AND status='Pending'
     """
 
     cursor.execute(upcoming_query, (doctor_id,))
@@ -408,7 +408,7 @@ def doctor_dashboard():
     # stats: distinct patients seen by this doctor
     cursor.execute("""
         SELECT COUNT(DISTINCT patient_id) AS total_patients
-        FROM appointment
+        FROM doc_patients
         WHERE doctor_id = %s
     """, (doctor_id,))
     total_patients = cursor.fetchone()["total_patients"]
@@ -445,7 +445,8 @@ def doctor_dashboard():
             p.phone as dept_name,
             MAX(a.ap_datetime) AS last_seen
         FROM patient p
-        JOIN appointment a ON a.patient_id = p.patient_id
+        JOIN appointment a 
+        ON a.patient_id = p.patient_id
         WHERE a.doctor_id = %s
         GROUP BY p.patient_id, p.first_name, p.last_name, p.gender, p.dob, p.phone, p.phone
         ORDER BY last_seen DESC
@@ -531,7 +532,7 @@ def patient_appointments(patient_id):
 
 @app.route("/patient/<patient_id>/admissions")
 def patient_admissions(patient_id):
-    doctor_id = 2;
+    doctor_id = session["user_id"];
     patients_profile = patient_profile_data(db, conn, patient_id)
     adm = admission(db, conn, patient_id);
     return render_template("patient_admissions.html", admissions=adm, patient=patients_profile, role=session["role"],
@@ -619,7 +620,7 @@ def patient_prescriptions(patient_id):
             p.start_date,
             p.end_date
         FROM prescription p
-        LEFT JOIN doctor d ON d.doctor_id = p.doctor_id
+        JOIN doctor d ON d.doctor_id = p.doctor_id
         WHERE p.patient_id = %s
         ORDER BY p.prescribed_datetime DESC
     """, (patient_id,))
@@ -638,19 +639,20 @@ def patient_prescriptions(patient_id):
 
 @app.route("/patient/<int:patient_id>/create-prescription", methods=["POST"])
 def create_prescription(patient_id):
-    doctor_id = request.form.get("doctor_id")
     dosage_instruction = request.form.get("dosage_instruction")
     start_date = request.form.get("start_date")
     end_date = request.form.get("end_date")
 
     cursor = conn.cursor()
 
+    doctor_id = session["user_id"]
+
     cursor.execute("""
         INSERT INTO prescription
-        (dosage_instruction, start_date, end_date, patient_id, doctor_id)
-        VALUES (%s, %s, %s, %s, %s)
+        (dosage_instruction, prescribed_datetime, start_date, end_date, patient_id, doctor_id)
+        VALUES (%s, NOW(), %s, %s, %s, %s)
     """, (dosage_instruction, start_date, end_date, patient_id, doctor_id))
-
+    
     conn.commit()
     cursor.close()
 
@@ -669,7 +671,8 @@ def patient_lab_tests(patient_id):
         unreviewed_lab_tests = tests["unreviewed_lab_tests"],
         pending_lab_tests=tests["pending_lab_tests"],
         active_tab="lab_tests",
-        role=session["role"]
+        role=session["role"],
+        username=session["username"]
     )
 
 @app.route("/patient/<int:patient_id>/lab-tests/add-request", methods=["POST"])
@@ -1253,7 +1256,7 @@ def add_doctor_form():
         return redirect(url_for("login"))
 
     departments = fetch_departments()
-    return render_template("add_doctor.html", departments=departments, success=False)
+    return render_template("add_doctor.html", role=session["role"], username=session["username"], departments=departments, success=False)
 
 
 @app.route("/add_doctor", methods=["POST"])
@@ -1270,14 +1273,14 @@ def add_doctor():
 
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO doctor (doctor_id, first_name, last_name, specialty, email, dept_name)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO doctor (doctor_id, first_name, last_name, specialty, email, dept_name, password_hash)
+        VALUES (%s, %s, %s, %s, %s, %s, 'doctor123')
     """, (doctor_id, first_name, last_name, specialty or None, email, department_name))
     conn.commit()
     cursor.close()
 
     departments = fetch_departments()
-    return render_template("add_doctor.html", departments=departments, success=True)
+    return render_template("add_doctor.html", departments=departments, role=session["role"], username=session["username"], success=True)
 
 
 @app.route("/delete_doctor_form")
@@ -1321,7 +1324,8 @@ def update_doctor_form():
     cursor.execute("SELECT dept_name FROM department")
     departments = cursor.fetchall()
     cursor.close()
-    return render_template("update_doctor.html", doctors=doctors, departments=departments, success=False)
+    return render_template("update_doctor.html", doctors=doctors, departments=departments, role=session["role"],
+        username=session["username"], success=False)
 
 
 @app.route("/update_doctor", methods=["POST"])
@@ -1349,7 +1353,8 @@ def update_doctor():
     cursor.execute("SELECT dept_name FROM department")
     departments = cursor.fetchall()
     cursor.close()
-    return render_template("update_doctor.html", doctors=doctors, departments=departments, success=True)
+    return render_template("update_doctor.html", doctors=doctors, departments=departments, role=session["role"],
+        username=session["username"], success=True)
 
 
 @app.route("/add_patient_form")
@@ -1357,7 +1362,13 @@ def add_patient_form():
     if not require_login():
         return redirect(url_for("login"))
 
-    return render_template("add_patient.html", role=session["role"], username=session["username"], success=False)
+    cursor = conn.cursor()
+    cursor.execute("""SELECT dept_name FROM department""");
+    departments = cursor.fetchall();
+
+    cursor.close()
+
+    return render_template("add_patient.html", departments=departments, role=session["role"], username=session["username"], success=False)
 
 
 @app.route("/add_patient", methods=["POST"])
@@ -1365,7 +1376,7 @@ def add_patient():
     if not require_login():
         return redirect(url_for("login"))
 
-    patient_id = request.form["patient_id"]
+    
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     dob = request.form["dob"]
@@ -1374,15 +1385,30 @@ def add_patient():
     phone = normalize_phone(request.form.get("phone"))
     email = request.form["email"]
 
+    
     cursor = conn.cursor()
+
+    cursor.execute("""SELECT MAX(patient_id) + 1 as ID FROM patient""")
+    IDs = cursor.fetchone();
+
+    patient_id = str(IDs[0]);
+
     cursor.execute("""
         INSERT INTO patient (patient_id, first_name, last_name, dob, gender, address, phone, email)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (patient_id, first_name, last_name, dob or None, gender or None, address or None, phone, email))
+
+    if session["role"] == "Doctor":
+        doctor_id = session["user_id"]
+        cursor.execute("""INSERT INTO doc_patients(patient_id, doctor_id) VALUES (%s, %s)""", (patient_id, doctor_id))
+
+    cursor.execute("""SELECT dept_name FROM department""");
+    departments = cursor.fetchall();
+
     conn.commit()
     cursor.close()
 
-    return render_template("add_patient.html", success=True)
+    return render_template("add_patient.html", departments=departments, role=session["role"], username=session["username"], success=True)
 
 
 @app.route("/delete_patient_form")

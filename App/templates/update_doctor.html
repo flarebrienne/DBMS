@@ -1,95 +1,224 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Add Doctor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+{% block content %}
+
+<style>
+    .update-doctor-page {
+        min-height: calc(100vh - 60px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 32px 16px;
+        background: #f8fafc;
+    }
+
+    .update-doctor-page .form-container {
+        width: 100%;
+        max-width: 760px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 28px;
+    }
+
+    .update-doctor-page .form-header {
+        text-align: center;
+        margin-bottom: 22px;
+    }
+
+    .update-doctor-page .form-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 12px;
+        border-radius: 16px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .update-doctor-page h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #1e293b;
+    }
+
+    .update-doctor-page .form-subtitle {
+        margin-top: 6px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .update-doctor-page .success-message {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        border: 1px solid #bbf7d0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .update-doctor-page .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .update-doctor-page .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    .update-doctor-page label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 700;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    .update-doctor-page input,
+    .update-doctor-page select {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px;
+        border-radius: 10px;
+        border: 1px solid #dbe2ea;
+        box-sizing: border-box;
+        outline: none;
+        font-size: 14px;
+        color: #1e293b;
+        background: #fff;
+    }
+
+    .update-doctor-page input:focus,
+    .update-doctor-page select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+
+    .update-doctor-page .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+
+    .update-doctor-page button {
+        height: 42px;
+        padding: 0 18px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .update-doctor-page button:hover {
+        background: #1d4ed8;
+    }
+
+    .update-doctor-page .back-link {
+        color: #475569;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .update-doctor-page .back-link:hover {
+        color: #2563eb;
+    }
+
+    @media (max-width: 700px) {
+        .update-doctor-page .form-grid {
+            grid-template-columns: 1fr;
         }
 
-        .form-container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 350px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .update-doctor-page .form-container {
+            padding: 22px;
         }
+    }
+</style>
 
-        h2 {
-            text-align: center;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-    </style>
-</head>
-
-<body>
-
+<div class="update-doctor-page">
     <div class="form-container">
-        <h2>Update Doctor</h2>
+
+        <div class="form-header">
+            <div class="form-icon">
+                <i class="fas fa-user-pen"></i>
+            </div>
+            <h2>Update Doctor</h2>
+            <div class="form-subtitle">Modify doctor details and department.</div>
+        </div>
+
         {% if success %}
-        <div
-            style="background-color:#d4edda;color:#155724;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+        <div class="success-message">
             Doctor has been successfully updated!
         </div>
         {% endif %}
+
         <form action="/update_doctor" method="POST">
 
-            <label for="doctor_id">Select Doctor:</label>
-            <select name="doctor_id" id="doctor_id" required>
-                {% for doctor in doctors %}
-                <option value="{{ doctor[0] }}">Dr. {{ doctor[1] }} {{doctor[2] }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-grid">
 
-            <input type="text" name="first_name" placeholder="First Name" required>
+                <!-- Select Doctor -->
+                <div class="form-group full">
+                    <label for="doctor_id">Select Doctor</label>
+                    <select name="doctor_id" id="doctor_id" required>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor[0] }}">
+                            Dr. {{ doctor[1] }} {{ doctor[2] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <input type="text" name="last_name" placeholder="Last Name" required>
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" name="first_name" id="first_name" placeholder="First Name" required>
+                </div>
 
-            <input type="text" name="specialty" placeholder="Specialty" required>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" name="last_name" id="last_name" placeholder="Last Name" required>
+                </div>
 
-            <input type="email" name="email" placeholder="Email" required>
+                <div class="form-group">
+                    <label for="specialty">Specialty</label>
+                    <input type="text" name="specialty" id="specialty" placeholder="Specialty" required>
+                </div>
 
-            <!-- Department Dropdown -->
-            <label for="dept_name">Department Name:</label>
-            <select name="department_name" required>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Email" required>
+                </div>
 
-                {% for dept in departments %}
-                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
-                {% endfor %}
+                <div class="form-group">
+                    <label for="department_name">Department</label>
+                    <select name="department_name" id="department_name" required>
+                        <option value="" disabled selected>Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            </select>
+            </div>
 
-            <button type="submit">Submit</button>
+            <div class="form-actions">
+                <a class="back-link" href="/dashboard">← Back to Home</a>
+                <button type="submit">Update Doctor</button>
+            </div>
+
         </form>
     </div>
+</div>
 
-</body>
-
-</html>
+{% endblock %}

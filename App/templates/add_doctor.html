@@ -1,89 +1,212 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Add Doctor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+{% block content %}
+
+<style>
+    .add-doctor-page {
+        min-height: calc(100vh - 60px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 32px 16px;
+        background: #f8fafc;
+    }
+
+    .add-doctor-page .form-container {
+        width: 100%;
+        max-width: 760px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 28px;
+    }
+
+    .add-doctor-page .form-header {
+        text-align: center;
+        margin-bottom: 22px;
+    }
+
+    .add-doctor-page .form-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 12px;
+        border-radius: 16px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .add-doctor-page h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #1e293b;
+    }
+
+    .add-doctor-page .form-subtitle {
+        margin-top: 6px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .add-doctor-page .success-message {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        border: 1px solid #bbf7d0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .add-doctor-page .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .add-doctor-page .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    .add-doctor-page label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 700;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    .add-doctor-page input,
+    .add-doctor-page select {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px;
+        border-radius: 10px;
+        border: 1px solid #dbe2ea;
+        box-sizing: border-box;
+        outline: none;
+        font-size: 14px;
+        color: #1e293b;
+        background: #fff;
+    }
+
+    .add-doctor-page input:focus,
+    .add-doctor-page select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+
+    .add-doctor-page .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+
+    .add-doctor-page button {
+        height: 42px;
+        padding: 0 18px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .add-doctor-page button:hover {
+        background: #1d4ed8;
+    }
+
+    .add-doctor-page .back-link {
+        color: #475569;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .add-doctor-page .back-link:hover {
+        color: #2563eb;
+    }
+
+    @media (max-width: 700px) {
+        .add-doctor-page .form-grid {
+            grid-template-columns: 1fr;
         }
 
-        .form-container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 350px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .add-doctor-page .form-container {
+            padding: 22px;
         }
+    }
+</style>
 
-        h2 {
-            text-align: center;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-    </style>
-</head>
-
-<body>
-
+<div class="add-doctor-page">
     <div class="form-container">
-        <h2>Add Doctor</h2>
+        <div class="form-header">
+            <div class="form-icon">
+                <i class="fas fa-user-doctor"></i>
+            </div>
+            <h2>Add Doctor</h2>
+            <div class="form-subtitle">Enter the doctor's basic information and department.</div>
+        </div>
+
         {% if success %}
-        <div
-            style="background-color:#d4edda;color:#155724;padding:10px;margin-bottom:15px;border-radius:5px;border:1px solid #c3e6cb;">
+        <div class="success-message">
             Doctor has been successfully added!
         </div>
         {% endif %}
-        <form action="http://127.0.0.1:5000/add_doctor" method="POST">
 
-            <input type="text" name="doctor_id" placeholder="Doctor ID" required>
+        <form action="/add_doctor" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="doctor_id">Doctor ID</label>
+                    <input type="text" name="doctor_id" id="doctor_id" placeholder="Doctor ID" required>
+                </div>
 
-            <input type="text" name="first_name" placeholder="First Name" required>
+                <div class="form-group">
+                    <label for="specialty">Specialty</label>
+                    <input type="text" name="specialty" id="specialty" placeholder="Specialty" required>
+                </div>
 
-            <input type="text" name="last_name" placeholder="Last Name" required>
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" name="first_name" id="first_name" placeholder="First Name" required>
+                </div>
 
-            <input type="text" name="specialty" placeholder="Specialty" required>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" name="last_name" id="last_name" placeholder="Last Name" required>
+                </div>
 
-            <input type="email" name="email" placeholder="Email" required>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Email" required>
+                </div>
 
-            <!-- Department Dropdown -->
-            <select name="department_name" required>
+                <div class="form-group">
+                    <label for="department_name">Department</label>
+                    <select name="department_name" id="department_name" required>
+                        <option value="" disabled selected>Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-                {% for dept in departments %}
-                <option value="{{ dept[0] }}">{{ dept[0] }}</option>
-                {% endfor %}
-
-            </select>
-
-            <button type="submit">Submit</button>
+            <div class="form-actions">
+                <a class="back-link" href="/dashboard">← Back to Home</a>
+                <button type="submit">Add Doctor</button>
+            </div>
         </form>
     </div>
+</div>
 
-</body>
-
-</html>
+{% endblock %}

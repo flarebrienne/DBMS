@@ -168,16 +168,6 @@
         <form action="/add_patient" method="POST">
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="patient_id">Patient ID</label>
-                    <input type="number" name="patient_id" id="patient_id" placeholder="e.g. 101" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="dob">Date of Birth</label>
-                    <input type="date" name="dob" id="dob" required>
-                </div>
-
-                <div class="form-group">
                     <label for="first_name">First Name</label>
                     <input type="text" name="first_name" id="first_name" placeholder="First Name" required>
                 </div>
@@ -195,6 +185,11 @@
                         <option value="F">Female</option>
                         <option value="O">Other</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" name="dob" id="dob" required>
                 </div>
 
                 <div class="form-group">
@@ -225,7 +220,7 @@
 
             <div class="form-actions">
                 <a class="back-link"
-                    href="{% if role == 'Doctor' %}{{ url_for('doctor_dashboard') }}{% else %}/{% endif %}">
+                    href="{% if role == 'Doctor' %}{{ url_for('doctor_dashboard') }}{% else %}/dashboard{% endif %}">
                     ← Back to Home
                 </a>
                 <button type="submit">Add Patient</button>
